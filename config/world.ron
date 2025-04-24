@@ -1,0 +1,5 @@
+#![enable(implicit_some)]
+(
+    name: "The World",
+    max_levels: 2,
+)

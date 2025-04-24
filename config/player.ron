@@ -1,0 +1,43 @@
+#![enable(implicit_some)]
+(
+    name: "Jesus",
+    hp: 10,
+    mp: 2,
+    strength: 12,
+    con: 11,
+    int: 11,
+    dex: 11,
+    vision_range: 8,
+    skills: (
+        melee: 1,
+        defense: 1,
+        magic: 1,
+    ),
+    hp_regen: (
+        frequency: 20,
+        amount: 1,
+    ),
+    mp_regen: (
+        frequency: 50,
+        amount: 1,
+    ),
+    equipment: (
+        equipped: [
+            "sword of development",
+            "cloth tunic",
+            "cloth pants",
+            "old boots",
+        ],
+        carried: [
+            "big boom",
+            "rusty longsword",
+        ],
+        carried_stacks: [
+            ( name: "scroll of magic mapping", amount: 5),
+            ( name: "scroll of remove curses", amount: 5),
+            ( name: "scroll of identify", amount: 5),
+            ( name: "potion of healing", amount: 3),
+            ( name: "exploding rock", amount: 5),
+        ]
+    ),
+)
