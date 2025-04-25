@@ -3,13 +3,20 @@ use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use log::info;
 use std::env;
 
-// use std::time::{SystemTime, UNIX_EPOCH};
-
 mod config;
 pub use config::*;
 
 #[macro_use]
 extern crate lazy_static;
+
+pub const VERSION_STRING: &str = concat!(
+    env!("CARGO_PKG_VERSION"),
+    "-",
+    env!("VERGEN_GIT_DESCRIBE"),
+    " (",
+    env!("VERGEN_BUILD_TIMESTAMP"),
+    ")"
+);
 
 async fn tokio_main() -> Result<()> {
     log::debug!("Loading config files");
@@ -24,11 +31,11 @@ async fn main() -> Result<()> {
         .log_to_file(FileSpec::default().directory("logs").basename(env!("CARGO_PKG_NAME")))
         .write_mode(WriteMode::BufferAndFlush)
         .duplicate_to_stderr(Duplicate::Warn)
-        .create_symlink("last-log")
+        .create_symlink("current-log")
         .format_for_files(flexi_logger::detailed_format)
         .start()?;
 
-    info!("{} starting", env!("CARGO_PKG_NAME"));
+    info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
 
     if let Err(e) = tokio_main().await {
         eprintln!("{} error: {:?}", env!("CARGO_PKG_NAME"), e);
