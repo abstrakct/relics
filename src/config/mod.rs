@@ -12,6 +12,7 @@ mod world;
 pub use configmaster::*;
 pub use game::*;
 pub use player::*;
+pub use ui::*;
 pub use world::*;
 
 lazy_static! {

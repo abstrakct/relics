@@ -12,12 +12,17 @@ mod cli;
 mod config;
 mod game;
 mod rng;
-mod uimode;
+mod tui;
+pub mod ui;
+mod ui_component;
+mod ui_mode;
 
 pub use action::*;
 use cli::CliArgs;
 pub use config::*;
 pub use game::*;
+pub use ui::*;
+pub use ui_component::*;
 
 #[macro_use]
 extern crate lazy_static;
@@ -38,7 +43,7 @@ async fn tokio_main() -> Result<()> {
     let args = CliArgs::parse();
 
     log::debug!("Starting game");
-    let mut game = Game::new(60.0, 60.0);
+    let mut game = Game::new(60.0, 60.0)?;
 
     // build system schedules here I guess
 
@@ -55,6 +60,10 @@ async fn tokio_main() -> Result<()> {
     info!("Setting RNG seed to {}", seed.0);
     rng::reseed(seed.0);
     game.world.insert_resource(seed);
+
+    // Load game data (aka raws) here
+
+    game.run().await?;
 
     Ok(())
 }

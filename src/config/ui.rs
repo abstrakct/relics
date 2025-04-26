@@ -1,17 +1,14 @@
-use std::{collections::HashMap, path::PathBuf};
-
-// use color_eyre::eyre::Result;
 use anyhow::Result;
-// use config::Value;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use derive_deref::{Deref, DerefMut};
 use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
+use std::{collections::HashMap, path::PathBuf};
 // use serde_json::Value as JsonValue;
 
-use crate::{action::Action, uimode::UiMode};
+use crate::{action::Action, ui_mode::UiMode};
 
-const UICONFIG: &str = include_str!("../../config/ui_config.json5");
+// const UICONFIG: &str = include_str!("../../config/ui_config.json5");
 
 // #[derive(Clone, Debug, Deserialize)]
 // pub struct GameKeyEvent {
@@ -40,19 +37,19 @@ pub struct UIConfig {
 
 impl UIConfig {
     pub fn new() -> Result<Self, config::ConfigError> {
-        let default_config: UIConfig = json5::from_str(UICONFIG).unwrap();
+        // let default_config: UIConfig = json5::from_str(UICONFIG).unwrap();
         // let data_dir = crate::utils::get_data_dir();
-        let data_dir: PathBuf = PathBuf::from("/home/rolf/src/rolf/legion-rust-rl");
+        let data_dir: PathBuf = PathBuf::from("/home/rolf/src/rolf/relics");
         // let config_dir = crate::utils::get_config_dir();
-        let config_dir: PathBuf = PathBuf::from("/home/rolf/src/rolf/legion-rust-rl/raws/config");
+        let config_dir: PathBuf = PathBuf::from("/home/rolf/src/rolf/relics/config");
         let mut builder = config::Config::builder()
             .set_default("_data_dir", data_dir.to_str().unwrap())?
             .set_default("_config_dir", config_dir.to_str().unwrap())?;
 
         let config_files = [
-            ("ui_config.json5", config::FileFormat::Json5),
             ("ui_config.json", config::FileFormat::Json),
             ("ui_config.ron", config::FileFormat::Ron),
+            ("ui_config.json5", config::FileFormat::Json5),
             ("ui_config.yaml", config::FileFormat::Yaml),
             ("ui_config.toml", config::FileFormat::Toml),
             ("ui_config.ini", config::FileFormat::Ini),
@@ -70,14 +67,15 @@ impl UIConfig {
 
         let mut cfg: Self = builder.build()?.try_deserialize()?;
 
-        for (mode, default_bindings) in default_config.keybindings.iter() {
+        for (mode, default_bindings) in cfg.clone().keybindings.iter() {
             let user_bindings = cfg.keybindings.entry(*mode).or_default();
             for (key, cmd) in default_bindings.iter() {
                 user_bindings.entry(key.clone()).or_insert_with(|| cmd.clone());
             }
         }
+
         #[allow(clippy::clone_on_copy)]
-        for (mode, default_styles) in default_config.styles.iter() {
+        for (mode, default_styles) in cfg.clone().styles.iter() {
             let user_styles = cfg.styles.entry(*mode).or_default();
             for (style_key, style) in default_styles.iter() {
                 user_styles.entry(style_key.clone()).or_insert_with(|| style.clone());

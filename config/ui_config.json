@@ -1,0 +1,31 @@
+{
+  "keybindings": {
+    "Home": {
+      "<q>": "Quit",
+      "<Ctrl-d>": "Quit",
+      "<Ctrl-c>": "Quit",
+      "<Ctrl-z>": "Suspend"
+    },
+    "Menu": {
+      "<q>": "Quit",
+      "<esc>": "Quit",
+      "<j>": "NextMenuItem",
+      "<k>": "PrevMenuItem",
+      "<down>": "NextMenuItem",
+      "<up>": "PrevMenuItem",
+      "<enter>": "SelectMenuItem"
+    },
+    "HUD": {
+      "<esc>": "Quit",
+      "<j>": { "PlayerMove": { "x": 0, "y": 1 } },
+      "<k>": { "PlayerMove": { "x": 0, "y": -1 } },
+      "<h>": { "PlayerMove": { "x": -1, "y": 0 } },
+      "<l>": { "PlayerMove": { "x": 1, "y": 0 } },
+      "<y>": { "PlayerMove": { "x": -1, "y": -1 } },
+      "<u>": { "PlayerMove": { "x": 1, "y": -1 } },
+      "<b>": { "PlayerMove": { "x": -1, "y": 1 } },
+      "<n>": { "PlayerMove": { "x": 1, "y": 1 } },
+      "<q>": "Quit"
+    }
+  }
+}

@@ -2,3 +2,4 @@
 /logs
 current
 current-log
+*.ignore

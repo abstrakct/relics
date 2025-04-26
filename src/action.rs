@@ -9,4 +9,11 @@ use strum::Display;
 pub enum Action {
     Tick,
     Quit,
+    Suspend,
+    GenerateWorld,
+    StartNewGame,
+    NextMenuItem,
+    PrevMenuItem,
+    SelectMenuItem,
+    PlayerMove { x: i32, y: i32 },
 }

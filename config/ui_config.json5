@@ -1,12 +1,12 @@
 {
   keybindings: {
-    "Home": {
+    Home: {
       "<q>": "Quit", // Quit the application
       "<Ctrl-d>": "Quit", // Another way to quit
       "<Ctrl-c>": "Quit", // Yet another way to quit
       "<Ctrl-z>": "Suspend", // Suspend the application
     },
-    "Menu": {
+    Menu: {
       // "<q>": {
       //     "action": "Quit",
       //     "keyEvent": "Release",
@@ -19,19 +19,19 @@
       "<up>": "PrevMenuItem",
       "<enter>": "SelectMenuItem",
     },
-    "HUD": {
+    HUD: {
       "<q>": "Quit", // Quit the application
       "<w>": "Quit", // Quit the application
       "<esc>": "Quit", // Quit the application
-      "<j>": "PlayerMoveDown",
-      "<k>": "PlayerMoveUp",
-      "<h>": "PlayerMoveLeft",
-      "<l>": "PlayerMoveRight",
-      "<y>": "PlayerMoveUpLeft",
-      "<u>": "PlayerMoveUpRight",
-      "<b>": "PlayerMoveDownLeft",
-      "<n>": "PlayerMoveDownRight",
-      "<.>": "PlayerPassTurn",
+      "<j>": { PlayerMove: { x: 0, y: 1 } },
+      // "<k>": "PlayerMoveUp",
+      // "<h>": "PlayerMoveLeft",
+      // "<l>": "PlayerMoveRight",
+      // "<y>": "PlayerMoveUpLeft",
+      // "<u>": "PlayerMoveUpRight",
+      // "<b>": "PlayerMoveDownLeft",
+      // "<n>": "PlayerMoveDownRight",
+      // "<.>": "PlayerPassTurn",
     },
   },
 }
