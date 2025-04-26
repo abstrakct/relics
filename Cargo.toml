@@ -6,13 +6,18 @@ edition = "2024"
 [dependencies]
 anyhow = "1"
 bevy_ecs = "0.15"
+config = "0.15"
+crossterm = { version = "0.29", features = ["serde", "event-stream"] }
+derive_deref = "1"
 flexi_logger = "0.30"
 lazy_static = "1.4"
 log = "0.4"
+ratatui = { version = "0.29", features = ["serde", "macros"] }
 ron = "0.10"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 tokio-util = "0.7"
+
 # tracing = "0.1"
 # tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
