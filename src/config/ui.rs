@@ -9,9 +9,9 @@ use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
 // use serde_json::Value as JsonValue;
 
-use crate::{action::Action, mode::Mode};
+use crate::{action::Action, uimode::UiMode};
 
-const UICONFIG: &str = include_str!("../../raws/config/ui_config.json5");
+const UICONFIG: &str = include_str!("../../config/ui_config.json5");
 
 // #[derive(Clone, Debug, Deserialize)]
 // pub struct GameKeyEvent {
@@ -89,14 +89,14 @@ impl UIConfig {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct KeyBindings(pub HashMap<Mode, HashMap<Vec<KeyEvent>, Action>>);
+pub struct KeyBindings(pub HashMap<UiMode, HashMap<Vec<KeyEvent>, Action>>);
 
 impl<'de> Deserialize<'de> for KeyBindings {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<Mode, HashMap<String, Action>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<UiMode, HashMap<String, Action>>::deserialize(deserializer)?;
 
         let keybindings = parsed_map
             .into_iter()
@@ -284,14 +284,14 @@ pub fn parse_key_sequence(raw: &str) -> Result<Vec<KeyEvent>, String> {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct Styles(pub HashMap<Mode, HashMap<String, Style>>);
+pub struct Styles(pub HashMap<UiMode, HashMap<String, Style>>);
 
 impl<'de> Deserialize<'de> for Styles {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<Mode, HashMap<String, String>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<UiMode, HashMap<String, String>>::deserialize(deserializer)?;
 
         let styles = parsed_map
             .into_iter()

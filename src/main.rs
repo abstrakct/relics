@@ -6,6 +6,7 @@ use std::env;
 mod action;
 mod config;
 mod game;
+mod uimode;
 
 pub use action::*;
 pub use config::*;
