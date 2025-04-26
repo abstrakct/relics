@@ -1,4 +1,8 @@
-use bevy_ecs::world::World;
+use bevy_ecs::{resource::Resource, world::World};
+
+// todo: consider moving to a file like resources.rs
+#[derive(Resource, Default)]
+pub struct Seed(pub u64);
 
 pub struct Game {
     pub world: World,

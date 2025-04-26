@@ -1,14 +1,21 @@
 use anyhow::Result;
+use clap::Parser;
 use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use log::info;
-use std::env;
+use std::{
+    env,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 mod action;
+mod cli;
 mod config;
 mod game;
+mod rng;
 mod uimode;
 
 pub use action::*;
+use cli::CliArgs;
 pub use config::*;
 pub use game::*;
 
@@ -27,6 +34,27 @@ pub const VERSION_STRING: &str = concat!(
 async fn tokio_main() -> Result<()> {
     log::debug!("Loading config files");
     config::load_config(Some("config"));
+
+    let args = CliArgs::parse();
+
+    log::debug!("Starting game");
+    let mut game = Game::new(60.0, 60.0);
+
+    // build system schedules here I guess
+
+    // insert resources here I guess
+
+    let seed;
+    if args.seed == 0 {
+        info!("No RNG seed specified - using current unix epoch time.");
+        seed = Seed(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+    } else {
+        seed = Seed(args.seed);
+        info!("RNG seed specified on command line: {}", seed.0);
+    }
+    info!("Setting RNG seed to {}", seed.0);
+    rng::reseed(seed.0);
+    game.world.insert_resource(seed);
 
     Ok(())
 }
