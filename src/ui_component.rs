@@ -1,6 +1,6 @@
 use anyhow::Result;
 use crossterm::event::{KeyEvent, MouseEvent};
-use ratatui::layout::Rect;
+use ratatui::layout::{Rect, Size};
 use tokio::sync::mpsc::UnboundedSender;
 
 // pub mod components;
@@ -52,7 +52,7 @@ pub trait UIComponent {
     /// # Returns
     ///
     /// * `Result<()>` - An Ok result or an error.
-    fn init(&mut self, area: Rect) -> Result<()> {
+    fn init(&mut self, area: Size) -> Result<()> {
         Ok(())
     }
 
