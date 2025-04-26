@@ -3,8 +3,13 @@ use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use log::info;
 use std::env;
 
+mod action;
 mod config;
+mod game;
+
+pub use action::*;
 pub use config::*;
+pub use game::*;
 
 #[macro_use]
 extern crate lazy_static;

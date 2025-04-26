@@ -6,6 +6,7 @@ use std::sync::Mutex;
 mod configmaster;
 mod game;
 mod player;
+mod ui;
 mod world;
 
 pub use configmaster::*;
