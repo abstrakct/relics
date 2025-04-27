@@ -9,6 +9,7 @@ use std::{
 
 mod action;
 mod cli;
+mod component;
 mod config;
 mod game;
 mod map;
