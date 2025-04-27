@@ -114,7 +114,9 @@ impl Game {
             }
 
             while let Ok(action) = action_rx.try_recv() {
-                log::debug!("Received action: {action:?}");
+                if action != Action::Tick && action != Action::Render {
+                    log::debug!("Received action: {action:?}");
+                }
                 match action {
                     Action::Quit => self.should_quit = true,
                     Action::Tick => {
