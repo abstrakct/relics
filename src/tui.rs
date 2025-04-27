@@ -56,6 +56,7 @@ pub struct Tui {
     pub paste: bool,
 }
 
+#[allow(dead_code)]
 impl Tui {
     pub fn new() -> Result<Self> {
         let tick_rate = 4.0;

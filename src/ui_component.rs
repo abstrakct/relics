@@ -52,7 +52,7 @@ pub trait UIComponent {
     /// # Returns
     ///
     /// * `Result<()>` - An Ok result or an error.
-    fn init(&mut self, area: Size) -> Result<()> {
+    fn init(&mut self, _area: Size) -> Result<()> {
         Ok(())
     }
 

@@ -28,6 +28,7 @@ pub fn range(min: i32, max: i32) -> i32 {
     RNG.lock().unwrap().range(min, max)
 }
 
+#[allow(dead_code)]
 pub fn next_u64() -> u64 {
     RNG.lock().unwrap().next_u64()
 }
