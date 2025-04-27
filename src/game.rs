@@ -7,6 +7,7 @@ use tokio::sync::mpsc;
 pub use crate::{
     Action, UIComponent,
     config::UIConfig,
+    generate_world,
     ui::{self, UIComponentData},
 };
 use crate::{tui, ui_mode::UiMode};
@@ -110,32 +111,36 @@ impl Game {
                         action_tx.send(action)?;
                     }
                 }
+            }
 
-                while let Ok(action) = action_rx.try_recv() {
-                    log::debug!("Received action: {action:?}");
-                    match action {
-                        Action::Quit => self.should_quit = true,
-                        Action::Tick => {
-                            self.last_tick_key_events.drain(..);
-                        }
-                        Action::Render => {
-                            tui.draw(|f| {
-                                for (_component_name, uicomponent) in self.ui_components.iter_mut().filter(|x| x.1.visible) {
-                                    // log::debug!("Drawing component: {}", component_name);
-                                    let r = uicomponent.component.draw(f, f.area());
-                                    if let Err(e) = r {
-                                        action_tx.send(Action::Error(format!("Failed to draw: {:?}", e))).unwrap();
-                                    }
-                                }
-                            })?;
-                        }
-                        _ => {}
+            while let Ok(action) = action_rx.try_recv() {
+                log::debug!("Received action: {action:?}");
+                match action {
+                    Action::Quit => self.should_quit = true,
+                    Action::Tick => {
+                        self.last_tick_key_events.drain(..);
                     }
+                    Action::Render => {
+                        tui.draw(|f| {
+                            for (_component_name, uicomponent) in self.ui_components.iter_mut().filter(|x| x.1.visible) {
+                                // log::debug!("Drawing component: {}", component_name);
+                                let r = uicomponent.component.draw(f, f.area());
+                                if let Err(e) = r {
+                                    action_tx.send(Action::Error(format!("Failed to draw: {:?}", e))).unwrap();
+                                }
+                            }
+                        })?;
+                    }
+                    Action::GenerateWorld => {
+                        generate_world(self);
+                        self.ui_mode = UiMode::Menu;
+                    }
+                    _ => {}
+                }
 
-                    for (_, uicomponent) in self.ui_components.iter_mut() {
-                        if let Some(action) = uicomponent.component.update(action.clone())? {
-                            action_tx.send(action)?;
-                        }
+                for (_, uicomponent) in self.ui_components.iter_mut() {
+                    if let Some(action) = uicomponent.component.update(action.clone())? {
+                        action_tx.send(action)?;
                     }
                 }
             }

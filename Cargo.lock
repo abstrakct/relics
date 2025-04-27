@@ -1124,6 +1124,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "grid"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "969d090eea77fac1be33f853ffc4b6b60cc6f312ddf4fd28b311a730e1dd8ebe"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "hash32"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1872,6 +1881,7 @@ dependencies = [
  "derive_deref",
  "flexi_logger",
  "futures",
+ "grid",
  "json5",
  "lazy_static",
  "log",

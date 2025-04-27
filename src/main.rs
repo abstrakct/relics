@@ -11,18 +11,22 @@ mod action;
 mod cli;
 mod config;
 mod game;
+mod map;
 mod rng;
 mod tui;
 pub mod ui;
 mod ui_component;
 mod ui_mode;
+mod worldgen;
+
+use cli::CliArgs;
 
 pub use action::*;
-use cli::CliArgs;
 pub use config::*;
 pub use game::*;
 pub use ui::*;
 pub use ui_component::*;
+pub use worldgen::*;
 
 #[macro_use]
 extern crate lazy_static;

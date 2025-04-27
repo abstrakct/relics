@@ -1,5 +1,7 @@
 #![enable(implicit_some)]
 (
     name: "The World",
-    max_levels: 2,
+    max_levels: 10,
+    default_map_width: 80,
+    default_map_height: 50,
 )
