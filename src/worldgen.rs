@@ -18,10 +18,10 @@ fn generate_maps(game: &mut Game, first: usize, last: usize) {
         let mut builder = generate_builder_chain(i, &name, 80, 50);
         builder.build_map();
 
-        // maps.map.push(map);
+        maps.map.push(builder.get_map());
     }
 
-    // game.world.insert_resource(maps);
+    game.world.insert_resource(maps);
 }
 
 pub fn generate_world(game: &mut Game) {
