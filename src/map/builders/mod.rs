@@ -1,11 +1,13 @@
 mod initial_empty_map;
 mod initial_rooms;
+mod meta_room_drawer;
 mod meta_test_one;
 
 use super::{Map, MapRect};
 use crate::rng;
 use initial_empty_map::EmptyMapBuilder;
 use initial_rooms::RoomsBuilder;
+use meta_room_drawer::RoomDrawer;
 use meta_test_one::TestOne;
 
 pub struct BuilderMap {
@@ -56,7 +58,6 @@ impl BuilderChain {
             None => self.starter = Some(starter),
             Some(_) => panic!("BuilderChain already has a starter!"),
         }
-
         self
     }
 
@@ -79,14 +80,24 @@ impl BuilderChain {
             metabuilder.build(&mut self.build_data);
         }
     }
+
+    pub fn get_map(&mut self) -> Map {
+        self.build_data.map.clone()
+    }
 }
 
 fn empty_map_builder(builder: &mut BuilderChain) {
-    builder.start_with(EmptyMapBuilder::new()).add(TestOne::new());
+    builder
+        .start_with(EmptyMapBuilder::new())
+        .add(TestOne::new())
+        .add(RoomDrawer::new());
 }
 
 fn random_rooms_builder(builder: &mut BuilderChain) {
-    builder.start_with(RoomsBuilder::new()).add(TestOne::new());
+    builder
+        .start_with(RoomsBuilder::new())
+        .add(TestOne::new())
+        .add(RoomDrawer::new());
 }
 
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
@@ -95,10 +106,10 @@ pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize
     let map_type = rng::roll_str("1d2");
     match map_type {
         1 => {
-            empty_map_builder(&mut builder);
+            random_rooms_builder(&mut builder);
         }
         _ => {
-            random_rooms_builder(&mut builder);
+            empty_map_builder(&mut builder);
         }
     }
 

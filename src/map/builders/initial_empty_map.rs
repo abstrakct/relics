@@ -15,7 +15,8 @@ impl EmptyMapBuilder {
     }
 
     fn build_map(&mut self, build_data: &mut BuilderMap) {
-        let rooms: Vec<MapRect> = vec![MapRect::new(1, 1, build_data.width as i32 - 1, build_data.height as i32 - 1)];
+        // Create one big room, leave a 1-tile border
+        let rooms: Vec<MapRect> = vec![MapRect::new(1, 1, build_data.width as i32 - 2, build_data.height as i32 - 2)];
         build_data.rooms = Some(rooms);
     }
 }

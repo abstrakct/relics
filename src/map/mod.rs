@@ -47,7 +47,7 @@ impl Map {
             name: name.into(),
             width,
             height,
-            tile_type: Grid::new(height, width),
+            tile_type: Grid::init(height, width, TileType::Wall),
             tile_revealed: Grid::init(height, width, false),
             tile_visible: Grid::init(height, width, false),
             tile_blocked: Grid::init(height, width, false),
@@ -63,8 +63,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_tiletype(&mut self, x: usize, y: usize, tile: TileType) {
-        self.tile_type[(y, x)] = tile;
+    pub fn set_tiletype(&mut self, x: i32, y: i32, tile: TileType) {
+        self.tile_type[(y as usize, x as usize)] = tile;
     }
 
     #[inline]
@@ -73,8 +73,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_revealed(&mut self, x: usize, y: usize, revealed: bool) {
-        self.tile_revealed[(y, x)] = revealed;
+    pub fn set_revealed(&mut self, x: i32, y: i32, revealed: bool) {
+        self.tile_revealed[(y as usize, x as usize)] = revealed;
     }
 
     #[inline]
@@ -83,9 +83,9 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_destructable(&mut self, x: usize, y: usize, destructable: bool, hitpoints: i32) {
-        self.tile_destructable[(y, x)] = destructable;
-        self.tile_hitpoints[(y, x)] = hitpoints;
+    pub fn set_destructable(&mut self, x: i32, y: i32, destructable: bool, hitpoints: i32) {
+        self.tile_destructable[(y as usize, x as usize)] = destructable;
+        self.tile_hitpoints[(y as usize, x as usize)] = hitpoints;
     }
 
     #[inline]
@@ -99,8 +99,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_walkable(&mut self, x: usize, y: usize, walkable: bool) {
-        self.tile_walkable[(y, x)] = walkable;
+    pub fn set_walkable(&mut self, x: i32, y: i32, walkable: bool) {
+        self.tile_walkable[(y as usize, x as usize)] = walkable;
     }
 
     #[inline]
@@ -109,8 +109,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_blocked(&mut self, x: usize, y: usize, blocked: bool) {
-        self.tile_blocked[(y, x)] = blocked;
+    pub fn set_blocked(&mut self, x: i32, y: i32, blocked: bool) {
+        self.tile_blocked[(y as usize, x as usize)] = blocked;
     }
 
     #[inline]
@@ -119,8 +119,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_blocks_view(&mut self, x: usize, y: usize, blocks_view: bool) {
-        self.tile_blocks_view[(y, x)] = blocks_view;
+    pub fn set_blocks_view(&mut self, x: i32, y: i32, blocks_view: bool) {
+        self.tile_blocks_view[(y as usize, x as usize)] = blocks_view;
     }
 
     #[inline]
@@ -129,8 +129,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn set_visible(&mut self, x: usize, y: usize, visible: bool) {
-        self.tile_visible[(y, x)] = visible;
+    pub fn set_visible(&mut self, x: i32, y: i32, visible: bool) {
+        self.tile_visible[(y as usize, x as usize)] = visible;
     }
 
     #[inline]

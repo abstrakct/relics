@@ -27,7 +27,11 @@ impl PlayerConfig {
             int: 0,
             dex: 0,
             vision_range: 0,
-            skills: PlayerSkills { melee: 0, defense: 0, magic: 0 },
+            skills: PlayerSkills {
+                melee: 0,
+                defense: 0,
+                magic: 0,
+            },
             hp_regen: PlayerRegen { frequency: 0, amount: 0 },
             mp_regen: PlayerRegen { frequency: 0, amount: 0 },
             equipment: PlayerEquipment {
