@@ -19,6 +19,8 @@ impl RoomDrawer {
         for y in room.y1..=room.y2 {
             for x in room.x1..=room.x2 {
                 build_data.map.set_tiletype(x, y, TileType::Floor);
+                build_data.map.set_blocks_view(x, y, true);
+                build_data.map.set_walkable(x, y, true);
             }
         }
     }
@@ -29,10 +31,8 @@ impl RoomDrawer {
         let rooms: Vec<MapRect>;
         if let Some(rooms_builder) = &build_data.rooms {
             rooms = rooms_builder.clone();
-            log::info!("we have rooms");
         } else {
             // TODO: this should be a handleable error
-            log::error!("RoomDrawer requires rooms!");
             panic!("RoomDrawer requires rooms!");
         }
 
