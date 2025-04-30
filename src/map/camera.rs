@@ -61,9 +61,9 @@ impl Default for RenderedTile {
 pub fn render_map(player_pos: &Position, map: Map, area: Rect) -> Grid<RenderedTile> {
     let mut rendered_map = Grid::init(map.height, map.width, RenderedTile::default());
 
-    for ((y, x), _) in map.tile_type.indexed_iter() {
-        if map.is_revealed(x, y) {
-            let fg = if map.is_visible(x, y) { Color::White } else { Color::Gray };
+    for ((y, x), tile) in map.tiles.indexed_iter() {
+        if tile.tile_revealed {
+            let fg = if tile.tile_visible { Color::White } else { Color::Gray };
             let bg = Color::Black;
             rendered_map[(y, x)] = RenderedTile {
                 glyph: map.glyph(x, y),

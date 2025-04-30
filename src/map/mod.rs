@@ -27,15 +27,7 @@ pub struct Map {
     pub name: String,
     pub width: usize,
     pub height: usize,
-    // pub tiles: Grid<Tile>,
-    pub tile_type: Grid<TileType>,
-    pub tile_revealed: Grid<bool>,
-    pub tile_visible: Grid<bool>,
-    pub tile_blocked: Grid<bool>,
-    pub tile_blocks_view: Grid<bool>,
-    pub tile_walkable: Grid<bool>,
-    pub tile_destructable: Grid<bool>,
-    pub tile_hitpoints: Grid<i32>,
+    pub tiles: Grid<Tile>,
     // of course a different approach is to have walls and stuff be entities.
     // and systems which update these grids according to components
     // but then, transformations of the grids would be more complex and require transforming entities as well.
@@ -49,14 +41,7 @@ impl Map {
             name: name.into(),
             width,
             height,
-            tile_type: Grid::init(height, width, TileType::Wall),
-            tile_revealed: Grid::init(height, width, true),
-            tile_visible: Grid::init(height, width, false),
-            tile_blocked: Grid::init(height, width, false),
-            tile_blocks_view: Grid::init(height, width, false),
-            tile_walkable: Grid::init(height, width, false),
-            tile_destructable: Grid::init(height, width, false),
-            tile_hitpoints: Grid::init(height, width, 0),
+            tiles: Grid::init(height, width, WALL_TILE.clone()),
         }
     }
 
@@ -73,88 +58,88 @@ impl Map {
 
     #[inline]
     pub fn set_tile_type(&mut self, x: i32, y: i32, tile: TileType) {
-        self.tile_type[(y as usize, x as usize)] = tile;
+        self.tiles[(y as usize, x as usize)].tile_type = tile;
     }
 
     #[inline]
     pub fn get_tile_type(&self, x: usize, y: usize) -> TileType {
-        self.tile_type[(y, x)]
+        self.tiles[(y, x)].tile_type
     }
 
     #[inline]
     pub fn set_revealed(&mut self, x: i32, y: i32, revealed: bool) {
-        self.tile_revealed[(y as usize, x as usize)] = revealed;
+        self.tiles[(y as usize, x as usize)].tile_revealed = revealed;
     }
 
     #[inline]
     pub fn is_revealed(&self, x: usize, y: usize) -> bool {
-        self.tile_revealed[(y, x)]
+        self.tiles[(y, x)].tile_revealed
     }
 
     #[inline]
     pub fn set_destructable(&mut self, x: i32, y: i32, destructable: bool, hitpoints: i32) {
-        self.tile_destructable[(y as usize, x as usize)] = destructable;
-        self.tile_hitpoints[(y as usize, x as usize)] = hitpoints;
+        self.tiles[(y as usize, x as usize)].tile_destructable = destructable;
+        self.tiles[(y as usize, x as usize)].tile_hitpoints = hitpoints;
     }
 
     #[inline]
     pub fn is_destructable(&self, x: usize, y: usize) -> bool {
-        self.tile_destructable[(y, x)]
+        self.tiles[(y, x)].tile_destructable
     }
 
     #[inline]
     pub fn get_hitpoints(&self, x: usize, y: usize) -> i32 {
-        self.tile_hitpoints[(y, x)]
+        self.tiles[(y, x)].tile_hitpoints
     }
 
     #[inline]
     pub fn set_walkable(&mut self, x: i32, y: i32, walkable: bool) {
-        self.tile_walkable[(y as usize, x as usize)] = walkable;
+        self.tiles[(y as usize, x as usize)].tile_walkable = walkable;
     }
 
     #[inline]
     pub fn is_walkable(&self, x: usize, y: usize) -> bool {
-        self.tile_walkable[(y, x)]
+        self.tiles[(y, x)].tile_walkable
     }
 
     #[inline]
     pub fn set_blocked(&mut self, x: i32, y: i32, blocked: bool) {
-        self.tile_blocked[(y as usize, x as usize)] = blocked;
+        self.tiles[(y as usize, x as usize)].tile_blocked = blocked;
     }
 
     #[inline]
     pub fn is_blocked(&self, x: usize, y: usize) -> bool {
-        self.tile_blocked[(y, x)]
+        self.tiles[(y, x)].tile_blocked
     }
 
     #[inline]
     pub fn set_blocks_view(&mut self, x: i32, y: i32, blocks_view: bool) {
-        self.tile_blocks_view[(y as usize, x as usize)] = blocks_view;
+        self.tiles[(y as usize, x as usize)].tile_blocks_view = blocks_view;
     }
 
     #[inline]
     pub fn blocks_view(&self, x: usize, y: usize) -> bool {
-        self.tile_blocks_view[(y, x)]
+        self.tiles[(y, x)].tile_blocks_view
     }
 
     #[inline]
     pub fn set_visible(&mut self, x: i32, y: i32, visible: bool) {
-        self.tile_visible[(y as usize, x as usize)] = visible;
+        self.tiles[(y as usize, x as usize)].tile_visible = visible;
     }
 
     #[inline]
     pub fn is_visible(&self, x: usize, y: usize) -> bool {
-        self.tile_visible[(y, x)]
+        self.tiles[(y, x)].tile_visible
     }
 
-    pub fn insert_col(&mut self, i: usize, h: usize) {
-        self.tile_type.insert_col(i, vec![TileType::default(); h]);
-        self.tile_revealed.insert_col(i, vec![true; h]);
-        self.tile_visible.insert_col(i, vec![false; h]);
-        self.tile_blocked.insert_col(i, vec![false; h]);
-        self.tile_blocks_view.insert_col(i, vec![true; h]);
-        self.tile_walkable.insert_col(i, vec![false; h]);
-        self.tile_destructable.insert_col(i, vec![false; h]);
-        self.tile_hitpoints.insert_col(i, vec![0; h]);
-    }
+    // pub fn insert_col(&mut self, i: usize, h: usize) {
+    //     self.tile_type.insert_col(i, vec![TileType::default(); h]);
+    //     self.tile_revealed.insert_col(i, vec![true; h]);
+    //     self.tile_visible.insert_col(i, vec![false; h]);
+    //     self.tile_blocked.insert_col(i, vec![false; h]);
+    //     self.tile_blocks_view.insert_col(i, vec![true; h]);
+    //     self.tile_walkable.insert_col(i, vec![false; h]);
+    //     self.tile_destructable.insert_col(i, vec![false; h]);
+    //     self.tile_hitpoints.insert_col(i, vec![0; h]);
+    // }
 }
