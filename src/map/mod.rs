@@ -27,6 +27,7 @@ pub struct Map {
     pub name: String,
     pub width: usize,
     pub height: usize,
+    // pub tiles: Grid<Tile>,
     pub tile_type: Grid<TileType>,
     pub tile_revealed: Grid<bool>,
     pub tile_visible: Grid<bool>,
@@ -144,5 +145,16 @@ impl Map {
     #[inline]
     pub fn is_visible(&self, x: usize, y: usize) -> bool {
         self.tile_visible[(y, x)]
+    }
+
+    pub fn insert_col(&mut self, i: usize, h: usize) {
+        self.tile_type.insert_col(i, vec![TileType::default(); h]);
+        self.tile_revealed.insert_col(i, vec![true; h]);
+        self.tile_visible.insert_col(i, vec![false; h]);
+        self.tile_blocked.insert_col(i, vec![false; h]);
+        self.tile_blocks_view.insert_col(i, vec![true; h]);
+        self.tile_walkable.insert_col(i, vec![false; h]);
+        self.tile_destructable.insert_col(i, vec![false; h]);
+        self.tile_hitpoints.insert_col(i, vec![0; h]);
     }
 }

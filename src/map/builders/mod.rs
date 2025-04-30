@@ -5,6 +5,7 @@ use super::{Map, MapRect};
 use crate::rng;
 use initial::empty_map::EmptyMapBuilder;
 use initial::rooms::RoomsBuilder;
+use meta::borders::Borders;
 use meta::room_drawer::RoomDrawer;
 use meta::test_one::TestOne;
 
@@ -95,7 +96,8 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
     builder
         .start_with(RoomsBuilder::new())
         .add(TestOne::new())
-        .add(RoomDrawer::new());
+        .add(RoomDrawer::new())
+        .add(Borders::new());
 }
 
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
