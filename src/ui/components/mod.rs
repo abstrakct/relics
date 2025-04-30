@@ -1,8 +1,8 @@
-// mod home;
+mod home;
 mod hud;
 mod menu;
 
-// pub use home::*;
+pub use home::*;
 pub use hud::*;
 pub use menu::*;
 
