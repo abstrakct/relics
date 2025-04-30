@@ -49,7 +49,7 @@ impl Map {
             width,
             height,
             tile_type: Grid::init(height, width, TileType::Wall),
-            tile_revealed: Grid::init(height, width, false),
+            tile_revealed: Grid::init(height, width, true),
             tile_visible: Grid::init(height, width, false),
             tile_blocked: Grid::init(height, width, false),
             tile_blocks_view: Grid::init(height, width, false),
