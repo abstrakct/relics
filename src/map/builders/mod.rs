@@ -1,14 +1,12 @@
-mod initial_empty_map;
-mod initial_rooms;
-mod meta_room_drawer;
-mod meta_test_one;
+mod initial;
+mod meta;
 
 use super::{Map, MapRect};
 use crate::rng;
-use initial_empty_map::EmptyMapBuilder;
-use initial_rooms::RoomsBuilder;
-use meta_room_drawer::RoomDrawer;
-use meta_test_one::TestOne;
+use initial::empty_map::EmptyMapBuilder;
+use initial::rooms::RoomsBuilder;
+use meta::room_drawer::RoomDrawer;
+use meta::test_one::TestOne;
 
 pub struct BuilderMap {
     pub map: Map,
