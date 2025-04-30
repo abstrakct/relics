@@ -13,7 +13,7 @@ impl TestOne {
         Box::new(TestOne {})
     }
 
-    pub fn build_map(&mut self, build_data: &mut BuilderMap) {
+    pub fn build_map(&mut self, _build_data: &mut BuilderMap) {
         log::debug!("In TestOne meta map builder build_map()");
     }
 }
