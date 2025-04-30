@@ -1,11 +1,11 @@
 use crate::{
-    CFG,
+    CFG, GameData,
     game::Game,
     map::{Map, Maps, generate_builder_chain},
 };
 // use bevy_ecs::prelude::*;
 
-fn generate_maps(game: &mut Game, first: usize, last: usize) {
+fn generate_maps(first: usize, last: usize) -> Maps {
     let mut maps = Maps::new();
 
     // Add an empty map at index 0
@@ -21,7 +21,7 @@ fn generate_maps(game: &mut Game, first: usize, last: usize) {
         maps.map.push(builder.get_map());
     }
 
-    game.world.insert_resource(maps);
+    maps
 }
 
 pub fn generate_world(game: &mut Game) {
@@ -39,5 +39,11 @@ pub fn generate_world(game: &mut Game) {
     game.world.clear_entities();
 
     log::info!("Generating maps");
-    generate_maps(game, first_map, last_map);
+    let maps = generate_maps(first_map, last_map);
+
+    let current_game = GameData { current_map: first_map };
+
+    log::info!("Inserting resources");
+    game.world.insert_resource(maps);
+    game.world.insert_resource(current_game);
 }

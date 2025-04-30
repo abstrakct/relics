@@ -103,13 +103,13 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
     let mut builder = BuilderChain::new(width, height);
 
-    let map_type = rng::roll_str("1d2");
+    let map_type = rng::roll_str("1d100");
     match map_type {
         1 => {
-            random_rooms_builder(&mut builder);
+            empty_map_builder(&mut builder);
         }
         _ => {
-            empty_map_builder(&mut builder);
+            random_rooms_builder(&mut builder);
         }
     }
 

@@ -3,6 +3,7 @@ use grid::Grid;
 use serde::{Deserialize, Serialize};
 
 mod builders;
+pub mod camera;
 mod rect;
 mod tile;
 pub use builders::*;
@@ -58,17 +59,24 @@ impl Map {
         }
     }
 
+    pub fn glyph(&self, x: usize, y: usize) -> char {
+        match self.get_tile_type(x, y) {
+            TileType::Floor => '.',
+            TileType::Wall => '#',
+        }
+    }
+
     pub fn set_name(&mut self, name: &str) {
         self.name = name.into();
     }
 
     #[inline]
-    pub fn set_tiletype(&mut self, x: i32, y: i32, tile: TileType) {
+    pub fn set_tile_type(&mut self, x: i32, y: i32, tile: TileType) {
         self.tile_type[(y as usize, x as usize)] = tile;
     }
 
     #[inline]
-    pub fn get_tiletype(&mut self, x: usize, y: usize) -> TileType {
+    pub fn get_tile_type(&self, x: usize, y: usize) -> TileType {
         self.tile_type[(y, x)]
     }
 
@@ -78,7 +86,7 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_revealed(&mut self, x: usize, y: usize) -> bool {
+    pub fn is_revealed(&self, x: usize, y: usize) -> bool {
         self.tile_revealed[(y, x)]
     }
 
@@ -89,12 +97,12 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_destructable(&mut self, x: usize, y: usize) -> bool {
+    pub fn is_destructable(&self, x: usize, y: usize) -> bool {
         self.tile_destructable[(y, x)]
     }
 
     #[inline]
-    pub fn get_hitpoints(&mut self, x: usize, y: usize) -> i32 {
+    pub fn get_hitpoints(&self, x: usize, y: usize) -> i32 {
         self.tile_hitpoints[(y, x)]
     }
 
@@ -104,7 +112,7 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_walkable(&mut self, x: usize, y: usize) -> bool {
+    pub fn is_walkable(&self, x: usize, y: usize) -> bool {
         self.tile_walkable[(y, x)]
     }
 
@@ -114,7 +122,7 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_blocked(&mut self, x: usize, y: usize) -> bool {
+    pub fn is_blocked(&self, x: usize, y: usize) -> bool {
         self.tile_blocked[(y, x)]
     }
 
@@ -124,7 +132,7 @@ impl Map {
     }
 
     #[inline]
-    pub fn blocks_view(&mut self, x: usize, y: usize) -> bool {
+    pub fn blocks_view(&self, x: usize, y: usize) -> bool {
         self.tile_blocks_view[(y, x)]
     }
 
@@ -134,7 +142,7 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_visible(&mut self, x: usize, y: usize) -> bool {
+    pub fn is_visible(&self, x: usize, y: usize) -> bool {
         self.tile_visible[(y, x)]
     }
 }

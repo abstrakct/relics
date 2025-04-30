@@ -18,9 +18,13 @@ impl RoomDrawer {
     fn rectangle(&mut self, build_data: &mut BuilderMap, room: &MapRect) {
         for y in room.y1..=room.y2 {
             for x in room.x1..=room.x2 {
-                build_data.map.set_tiletype(x, y, TileType::Floor);
+                build_data.map.set_tile_type(x, y, TileType::Floor);
                 build_data.map.set_blocks_view(x, y, true);
                 build_data.map.set_walkable(x, y, true);
+                #[cfg(debug_assertions)]
+                {
+                    build_data.map.set_revealed(x, y, true);
+                }
             }
         }
     }

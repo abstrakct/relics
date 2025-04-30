@@ -10,11 +10,17 @@ pub use crate::{
     generate_world,
     ui::{self, UIComponentData},
 };
-use crate::{tui, ui_mode::UiMode};
+use crate::{map::Maps, tui, ui_mode::UiMode};
 
 // todo: consider moving to a file like resources.rs
 #[derive(Resource, Default)]
 pub struct Seed(pub u64);
+
+// TODO: rename?
+#[derive(Resource)]
+pub struct GameData {
+    pub current_map: usize,
+}
 
 pub struct Game {
     pub world: World,
@@ -40,11 +46,20 @@ impl Game {
             .add_item(("Load Game", None))
             .add_item(("Quit", Some(Action::Quit)));
 
+        let hud = ui::components::Hud::new();
+
         ui_components.insert(
             "main_menu".to_string(),
             UIComponentData {
                 component: Box::new(main_menu) as Box<dyn UIComponent>,
                 visible: true,
+            },
+        );
+        ui_components.insert(
+            "hud".to_string(),
+            UIComponentData {
+                component: Box::new(hud) as Box<dyn UIComponent>,
+                visible: false,
             },
         );
 
@@ -135,7 +150,26 @@ impl Game {
                     }
                     Action::GenerateWorld => {
                         generate_world(self);
-                        self.ui_mode = UiMode::Menu;
+                        action_tx.send(Action::NextMenuItem)?;
+                    }
+                    Action::StartNewGame => {
+                        self.hide_uicomponent("main_menu");
+                        self.show_uicomponent("hud");
+                        self.ui_mode = UiMode::Hud;
+
+                        // unwrap should be perfectly safe here.
+                        // TODO: before we start we could have a function which checks that all necessary resources are available.
+                        let gd = self.world.get_resource::<GameData>().unwrap();
+                        let maps = self.world.get_resource::<Maps>().unwrap();
+                        let mut hud = ui::components::Hud::new();
+                        hud.set_map(maps.map[gd.current_map].clone());
+                        self.ui_components.insert(
+                            "hud".to_string(),
+                            UIComponentData {
+                                component: Box::new(hud) as Box<dyn UIComponent>,
+                                visible: true,
+                            },
+                        );
                     }
                     _ => {}
                 }
@@ -155,5 +189,25 @@ impl Game {
         }
 
         Ok(())
+    }
+
+    #[inline]
+    fn set_uicomponent_visibility<T: ToString>(&mut self, name: T, visibility: bool) {
+        let n = name.to_string();
+        if let Some(component) = self.ui_components.get_mut(&n) {
+            component.visible = visibility;
+        } else {
+            log::error!("Tried to set visibility of unknown ui component: {n}");
+        }
+    }
+
+    #[inline]
+    fn hide_uicomponent<T: ToString>(&mut self, name: T) {
+        self.set_uicomponent_visibility(name, false);
+    }
+
+    #[inline]
+    fn show_uicomponent<T: ToString>(&mut self, name: T) {
+        self.set_uicomponent_visibility(name, true);
     }
 }

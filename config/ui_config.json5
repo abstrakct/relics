@@ -19,11 +19,12 @@
       "<up>": "PrevMenuItem",
       "<enter>": "SelectMenuItem",
     },
-    HUD: {
+    Hud: {
       "<q>": "Quit", // Quit the application
       "<w>": "Quit", // Quit the application
       "<esc>": "Quit", // Quit the application
       "<j>": { PlayerMove: { x: 0, y: 1 } },
+      "<k>": { PlayerMove: { x: 0, y: -1 } },
       // "<k>": "PlayerMoveUp",
       // "<h>": "PlayerMoveLeft",
       // "<l>": "PlayerMoveRight",

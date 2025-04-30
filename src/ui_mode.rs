@@ -5,5 +5,5 @@ pub enum UiMode {
     #[default]
     Home,
     Menu,
-    HUD,
+    Hud,
 }

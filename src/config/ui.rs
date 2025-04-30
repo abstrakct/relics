@@ -46,10 +46,12 @@ impl UIConfig {
             .set_default("_data_dir", data_dir.to_str().unwrap())?
             .set_default("_config_dir", config_dir.to_str().unwrap())?;
 
+        // TODO: this tries to read ALL of these files!
+        // The latter entries take precedence over the previous
         let config_files = [
+            ("ui_config.json5", config::FileFormat::Json5),
             ("ui_config.json", config::FileFormat::Json),
             ("ui_config.ron", config::FileFormat::Ron),
-            ("ui_config.json5", config::FileFormat::Json5),
             ("ui_config.yaml", config::FileFormat::Yaml),
             ("ui_config.toml", config::FileFormat::Toml),
             ("ui_config.ini", config::FileFormat::Ini),

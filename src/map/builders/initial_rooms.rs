@@ -17,7 +17,7 @@ impl RoomsBuilder {
     fn build_map(&mut self, build_data: &mut BuilderMap) {
         const MAX_ROOMS: i32 = 30;
         const MIN_SIZE: i32 = 6;
-        const MAX_SIZE: i32 = 10;
+        const MAX_SIZE: i32 = 12;
         let mut rooms: Vec<MapRect> = Vec::new();
 
         for _i in 0..MAX_ROOMS {

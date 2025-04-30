@@ -79,7 +79,7 @@ pub struct Player;
 // Components with data //
 //----------------------//
 
-#[derive(Component, Default, Serialize, Deserialize)]
+#[derive(Component, Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct Position {
     pub x: usize,
     pub y: usize,

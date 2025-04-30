@@ -1,9 +1,9 @@
 // mod home;
-// mod hud;
+mod hud;
 mod menu;
 
 // pub use home::*;
-// pub use hud::*;
+pub use hud::*;
 pub use menu::*;
 
 use crate::UIComponent;
