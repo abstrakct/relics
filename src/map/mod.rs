@@ -74,6 +74,11 @@ impl Map {
     }
 
     #[inline]
+    pub fn reveal_all(&mut self) {
+        self.tiles.iter_mut().for_each(|tile| tile.tile_revealed = true);
+    }
+
+    #[inline]
     pub fn is_revealed(&self, x: usize, y: usize) -> bool {
         self.tiles[(y, x)].tile_revealed
     }
