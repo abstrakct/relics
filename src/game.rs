@@ -153,12 +153,13 @@ impl Game {
                         action_tx.send(Action::NextMenuItem)?;
                     }
                     Action::StartNewGame => {
+                        // Check that all necessary resources exist
+                        self.validate_resources();
+
                         self.hide_uicomponent("main_menu");
                         self.show_uicomponent("hud");
                         self.ui_mode = UiMode::Hud;
 
-                        // unwrap should be perfectly safe here.
-                        // TODO: before we start we could have a function which checks that all necessary resources are available.
                         let gd = self.world.get_resource::<GameData>().unwrap();
                         let mut hud = ui::components::Hud::new();
 
@@ -211,5 +212,14 @@ impl Game {
     #[inline]
     fn show_uicomponent<T: ToString>(&mut self, name: T) {
         self.set_uicomponent_visibility(name, true);
+    }
+
+    fn validate_resources(&self) {
+        if self.world.get_resource::<GameData>().is_none() {
+            panic!("GameData resource not found!");
+        }
+        if self.world.get_resource::<Maps>().is_none() {
+            panic!("Maps resource not found!");
+        }
     }
 }
