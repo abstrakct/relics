@@ -126,3 +126,93 @@ pub struct Attributes {
     pub con: Attribute,
     pub int: Attribute,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_pool_is_correct() {
+        let pool = Pool::new(100);
+        assert_eq!(pool.current, 100);
+        assert_eq!(pool.max, 100);
+        assert!(pool.is_full());
+        assert!(!pool.is_empty());
+    }
+
+    #[test]
+    fn pool_decrease() {
+        let mut pool = Pool::new(100);
+        pool.decrease(10);
+        assert_eq!(pool.current, 90);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_increase() {
+        let mut pool = Pool::new(100);
+        pool.decrease(10);
+        pool.increase(10);
+        assert_eq!(pool.current, 100);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_increase_doesnt_go_above_max() {
+        let mut pool = Pool::new(100);
+        pool.decrease(10);
+        pool.increase(20);
+        assert_eq!(pool.current, 100);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_decrease_doesnt_go_below_zero() {
+        let mut pool = Pool::new(100);
+        pool.decrease(150);
+        assert_eq!(pool.current, 0);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_percentage() {
+        let mut pool = Pool::new(100);
+        assert_eq!(pool.percent(), 1.0);
+        pool.decrease(50);
+        assert_eq!(pool.percent(), 0.5);
+    }
+
+    #[test]
+    fn pool_set_doesnt_go_above_max() {
+        let mut pool = Pool::new(100);
+        pool.set(50);
+        assert_eq!(pool.current, 50);
+        assert_eq!(pool.max, 100);
+        pool.set(500);
+        assert_eq!(pool.current, 100);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_set_doesnt_go_below_zero() {
+        let mut pool = Pool::new(100);
+        pool.set(-50);
+        assert_eq!(pool.current, 0);
+        assert_eq!(pool.max, 100);
+    }
+
+    #[test]
+    fn pool_can_be_emptied() {
+        let mut pool = Pool::new(100);
+        pool.empty();
+        assert!(pool.is_empty());
+    }
+
+    #[test]
+    fn pool_can_be_filled() {
+        let mut pool = Pool::new(100);
+        pool.empty();
+        pool.set_max();
+        assert!(pool.is_full());
+    }
+}
