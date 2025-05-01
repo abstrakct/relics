@@ -215,11 +215,17 @@ impl Game {
     }
 
     fn validate_resources(&self) {
+        log::info!("Checking existence of necessary resources.");
+
         if self.world.get_resource::<GameData>().is_none() {
+            log::error!("GameData resource not found!");
             panic!("GameData resource not found!");
         }
         if self.world.get_resource::<Maps>().is_none() {
+            log::error!("Maps resource not found!");
             panic!("Maps resource not found!");
         }
+
+        log::info!("All necessary resources exist!");
     }
 }
