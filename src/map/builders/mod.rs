@@ -7,7 +7,6 @@ use initial::empty_map::EmptyMapBuilder;
 use initial::rooms::RoomsBuilder;
 use meta::borders::Borders;
 use meta::room_drawer::RoomDrawer;
-use meta::test_one::TestOne;
 
 pub struct BuilderMap {
     pub map: Map,
@@ -88,14 +87,12 @@ impl BuilderChain {
 fn empty_map_builder(builder: &mut BuilderChain) {
     builder
         .start_with(EmptyMapBuilder::new())
-        .add(TestOne::new())
         .add(RoomDrawer::new());
 }
 
 fn random_rooms_builder(builder: &mut BuilderChain) {
     builder
         .start_with(RoomsBuilder::new())
-        .add(TestOne::new())
         .add(RoomDrawer::new())
         .add(Borders::new());
 }

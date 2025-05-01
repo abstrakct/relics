@@ -1,19 +1,19 @@
 use super::{BuilderMap, MetaMapBuilder};
 
-pub struct TestOne;
+pub struct Template;
 
-impl MetaMapBuilder for TestOne {
+impl MetaMapBuilder for Template {
     fn build(&mut self, build_data: &mut BuilderMap) {
         self.build_map(build_data);
     }
 }
 
-impl TestOne {
-    pub fn new() -> Box<TestOne> {
-        Box::new(TestOne {})
+impl Template {
+    pub fn new() -> Box<Template> {
+        Box::new(Template {})
     }
 
     pub fn build_map(&mut self, _build_data: &mut BuilderMap) {
-        log::debug!("In TestOne meta map builder build_map()");
+        log::debug!("In Template meta map builder build_map()");
     }
 }
