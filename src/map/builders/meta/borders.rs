@@ -1,4 +1,4 @@
-use super::{BORDER_TILE, BuilderMap, MetaMapBuilder, Tile, TileType};
+use super::{BORDER_TILE, BuilderMap, MetaMapBuilder};
 
 pub struct Borders;
 
