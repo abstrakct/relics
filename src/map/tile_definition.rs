@@ -26,7 +26,7 @@ pub const BORDER_TILE: Tile = Tile {
     tile_hitpoints: 0,
 };
 
-pub const FLOOT_TILE: Tile = Tile {
+pub const FLOOR_TILE: Tile = Tile {
     tile_type: TileType::Floor,
     tile_revealed: false,
     tile_visible: false,
