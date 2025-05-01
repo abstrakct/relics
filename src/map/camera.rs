@@ -28,7 +28,7 @@ impl Camera {
 impl Widget for Camera {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let rendered_map = render_map(&self.player_pos, self.map, area);
-        log::debug!("{:?}", rendered_map);
+        // log::debug!("{:?}", rendered_map);
         for ((y, x), _) in rendered_map.indexed_iter() {
             buf[RatatuiPosition {
                 x: x as u16,

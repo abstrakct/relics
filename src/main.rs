@@ -43,7 +43,7 @@ pub const VERSION_STRING: &str = concat!(
 
 async fn tokio_main() -> Result<()> {
     log::debug!("Loading config files");
-    config::load_config(Some("config"));
+    config::load_config(None, None);
 
     let args = CliArgs::parse();
 
