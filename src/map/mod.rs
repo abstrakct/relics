@@ -6,9 +6,11 @@ mod builders;
 pub mod camera;
 mod rect;
 mod tile;
+mod tile_definition;
 pub use builders::*;
 pub use rect::*;
 pub use tile::*;
+pub use tile_definition::*;
 
 #[derive(Resource)]
 pub struct Maps {
