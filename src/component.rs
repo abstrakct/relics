@@ -14,10 +14,22 @@ pub struct Pool {
 
 #[allow(dead_code)]
 impl Pool {
+    /// Creates a new `Pool` with the specified maximum capacity.
+    ///
+    /// # Arguments
+    ///
+    /// * `max` - The maximum capacity of the pool, which is also set as the initial current value.
     pub fn new(max: i32) -> Pool {
         Pool { current: max, max }
     }
 
+    /// Decreases the current value of the pool by the specified amount.
+    /// Current value can't go below 0.
+    ///
+    /// # Arguments
+    ///
+    /// * `amount` - The amount to decrease the pool by.
+    ///
     pub fn decrease(&mut self, amount: i32) {
         self.current -= amount;
         if self.current < 0 {
@@ -25,6 +37,12 @@ impl Pool {
         }
     }
 
+    /// Increases the current value of the pool by the specified amount.
+    /// Current value cannot exceed the maximum capacity.
+    ///
+    /// # Arguments
+    ///
+    /// * `amount` - The amount to increase the pool by.
     pub fn increase(&mut self, amount: i32) {
         self.current += amount;
         if self.current > self.max {
@@ -32,22 +50,42 @@ impl Pool {
         }
     }
 
+    /// Sets the current value of the pool to 0.
     pub fn empty(&mut self) {
         self.current = 0;
     }
 
+    /// Checks if the pool is empty.
+    ///
+    /// # Returns
+    ///
+    /// * `true` if the current value of the pool is 0, otherwise `false`.
     pub fn is_empty(&self) -> bool {
         self.current == 0
     }
 
+    /// Checks if the pool is full.
+    ///
+    /// # Returns
+    ///
+    /// * `true` if the current value of the pool is equal to the maximum capacity, otherwise `false`.
     pub fn is_full(&self) -> bool {
         self.current == self.max
     }
 
+    /// Returns the percentage of the pool that is filled.
+    ///
+    /// # Returns
+    ///
+    /// * A value between 0.0 and 1.0 representing the percentage of the pool that is filled.
     pub fn percent(&self) -> f32 {
         self.current as f32 / self.max as f32
     }
 
+    /// Sets the current value of the pool to the specified amount.
+    ///
+    /// If the specified amount is less than 0, the current value is set to 0.
+    /// If the specified amount is greater than the maximum capacity, the current value is set to the maximum capacity.
     pub fn set(&mut self, amount: i32) {
         self.current = amount;
         if self.current < 0 {
@@ -58,6 +96,7 @@ impl Pool {
         }
     }
 
+    /// Sets the current value of the pool to the maximum capacity.
     pub fn set_max(&mut self) {
         self.current = self.max;
     }
