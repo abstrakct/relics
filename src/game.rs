@@ -160,9 +160,11 @@ impl Game {
                         // unwrap should be perfectly safe here.
                         // TODO: before we start we could have a function which checks that all necessary resources are available.
                         let gd = self.world.get_resource::<GameData>().unwrap();
-                        let maps = self.world.get_resource::<Maps>().unwrap();
                         let mut hud = ui::components::Hud::new();
+
+                        let maps = self.world.get_resource::<Maps>().unwrap();
                         hud.set_map(maps.map[gd.current_map].clone());
+
                         self.ui_components.insert(
                             "hud".to_string(),
                             UIComponentData {

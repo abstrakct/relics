@@ -6,6 +6,7 @@ use crate::rng;
 use initial::empty_map::EmptyMapBuilder;
 use initial::rooms::RoomsBuilder;
 use meta::borders::Borders;
+use meta::reveal_all::RevealAll;
 use meta::room_drawer::RoomDrawer;
 
 pub struct BuilderMap {
@@ -87,20 +88,23 @@ impl BuilderChain {
 fn empty_map_builder(builder: &mut BuilderChain) {
     builder
         .start_with(EmptyMapBuilder::new())
-        .add(RoomDrawer::new());
+        .add(RoomDrawer::new())
+        .add(Borders::new())
+        .add(RevealAll::new());
 }
 
 fn random_rooms_builder(builder: &mut BuilderChain) {
     builder
         .start_with(RoomsBuilder::new())
         .add(RoomDrawer::new())
-        .add(Borders::new());
+        .add(Borders::new())
+        .add(RevealAll::new());
 }
 
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
     let mut builder = BuilderChain::new(width, height);
 
-    let map_type = rng::roll_str("1d100");
+    let map_type = rng::roll_str("1d2");
     match map_type {
         1 => {
             empty_map_builder(&mut builder);
@@ -116,6 +120,6 @@ pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize
 }
 
 pub fn generate_builder_chain(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
-    log::info!("Building map: {map_name}");
+    log::info!("Building map: {map_name} using random_builder");
     random_builder(map_id, map_name, width, height)
 }
