@@ -50,6 +50,9 @@ impl Pool {
 
     pub fn set(&mut self, amount: i32) {
         self.current = amount;
+        if self.current < 0 {
+            self.current = 0;
+        }
         if self.current > self.max {
             self.current = self.max;
         }
