@@ -156,14 +156,16 @@ impl Game {
                         // Check that all necessary resources exist
                         self.validate_resources();
 
+                        log::info!("Starting game...");
+
+                        // Hide menu and show HUD
                         self.hide_uicomponent("main_menu");
                         self.show_uicomponent("hud");
                         self.ui_mode = UiMode::Hud;
 
                         let gd = self.world.get_resource::<GameData>().unwrap();
-                        let mut hud = ui::components::Hud::new();
-
                         let maps = self.world.get_resource::<Maps>().unwrap();
+                        let mut hud = ui::components::Hud::new();
                         hud.set_map(maps.map[gd.current_map].clone());
 
                         self.ui_components.insert(
@@ -215,7 +217,7 @@ impl Game {
     }
 
     fn validate_resources(&self) {
-        log::info!("Checking existence of necessary resources.");
+        log::info!("Checking existence of necessary resources...");
 
         if self.world.get_resource::<GameData>().is_none() {
             log::error!("GameData resource not found!");
