@@ -19,8 +19,19 @@ impl Pool {
     /// # Arguments
     ///
     /// * `max` - The maximum capacity of the pool, which is also set as the initial current value.
-    pub fn new(max: i32) -> Pool {
-        Pool { current: max, max }
+    pub fn new(max: i32) -> Self {
+        Self { current: max, max }
+    }
+
+    /// Creates a new `Pool` with the specified initial current value and maximum capacity.
+    ///
+    /// # Arguments
+    ///
+    /// * `current` - The initial current value of the pool.
+    /// * `max` - The maximum capacity of the pool.
+    ///
+    pub fn init(current: i32, max: i32) -> Self {
+        Self { current, max }
     }
 
     /// Decreases the current value of the pool by the specified amount.
