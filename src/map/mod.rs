@@ -59,6 +59,11 @@ impl Map {
     }
 
     #[inline]
+    pub fn define_tile(&mut self, x: i32, y: i32, tile: Tile) {
+        self.tiles[(y as usize, x as usize)] = tile;
+    }
+
+    #[inline]
     pub fn set_tile_type(&mut self, x: i32, y: i32, tile: TileType) {
         self.tiles[(y as usize, x as usize)].tile_type = tile;
     }
