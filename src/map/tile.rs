@@ -19,7 +19,9 @@ pub struct Tile {
     pub tile_hitpoints: i32,
 }
 
-// Tile definitions
+//////////////////////
+// Tile definitions //
+//////////////////////
 
 pub const WALL_TILE: Tile = Tile {
     tile_type: TileType::Wall,
