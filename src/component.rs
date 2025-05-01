@@ -89,7 +89,7 @@ impl Pool {
     /// # Returns
     ///
     /// * A value between 0.0 and 1.0 representing the percentage of the pool that is filled.
-    pub fn percent(&self) -> f32 {
+    pub fn current_percent(&self) -> f32 {
         self.current as f32 / self.max as f32
     }
 
@@ -230,9 +230,9 @@ mod tests {
     #[test]
     fn pool_percentage() {
         let mut pool = Pool::new(100);
-        assert_eq!(pool.percent(), 1.0);
+        assert_eq!(pool.current_percent(), 1.0);
         pool.decrease(50);
-        assert_eq!(pool.percent(), 0.5);
+        assert_eq!(pool.current_percent(), 0.5);
     }
 
     #[test]
