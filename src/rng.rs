@@ -32,3 +32,51 @@ pub fn range(min: i32, max: i32) -> i32 {
 pub fn next_u64() -> u64 {
     RNG.lock().unwrap().next_u64()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn seeded_rng_returns_expected_values() {
+        reseed(123456789);
+        assert_eq!(next_u64(), 4730442134150660564);
+        assert_eq!(next_u64(), 12666920420498467706);
+    }
+
+    #[test]
+    fn range_is_within_range() {
+        for _ in 1..=100 {
+            let result = range(1, 10);
+            assert!(result >= 1);
+            assert!(result <= 10);
+        }
+    }
+
+    #[test]
+    fn roll_str_1d10() {
+        for _ in 1..=100 {
+            let result = roll_str("1d10");
+            assert!(result >= 1);
+            assert!(result <= 10);
+        }
+    }
+
+    #[test]
+    fn roll_str_2d20plus2() {
+        for _ in 1..=100 {
+            let result = roll_str("2d20+2");
+            assert!(result >= 4);
+            assert!(result <= 42);
+        }
+    }
+
+    #[test]
+    fn roll_str_3d6minus5() {
+        for _ in 1..=100 {
+            let result = roll_str("3d6-5");
+            assert!(result >= -2);
+            assert!(result <= 13);
+        }
+    }
+}
