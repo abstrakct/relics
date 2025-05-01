@@ -19,6 +19,21 @@ pub struct Tile {
     pub tile_hitpoints: i32,
 }
 
+impl Default for Tile {
+    fn default() -> Self {
+        Tile {
+            tile_type: TileType::default(),
+            tile_revealed: false,
+            tile_visible: false,
+            tile_blocked: false,
+            tile_blocks_view: true,
+            tile_walkable: false,
+            tile_destructable: false,
+            tile_hitpoints: 0,
+        }
+    }
+}
+
 //////////////////////
 // Tile definitions //
 //////////////////////
