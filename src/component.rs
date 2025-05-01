@@ -8,14 +8,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Pool {
-    pub max: i32,
     pub current: i32,
+    pub max: i32,
 }
 
 #[allow(dead_code)]
 impl Pool {
     pub fn new(max: i32) -> Pool {
-        Pool { max, current: max }
+        Pool { current: max, max }
     }
 
     pub fn decrease(&mut self, amount: i32) {
@@ -109,13 +109,13 @@ pub struct Stats {
     pub hp: Pool,
     /// Magic points
     pub mp: Pool,
-    /// Experience points
+    /// Current experience points
     pub xp: i32,
-    /// Defense value
+    /// Current defense value
     pub dv: i32,
-    /// Protection value
+    /// Current protection value
     pub pv: i32,
-    /// Level (experience level)
+    /// Current level (experience level)
     pub lv: i32,
 }
 
