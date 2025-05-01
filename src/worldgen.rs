@@ -41,9 +41,9 @@ pub fn generate_world(game: &mut Game) {
     log::info!("Generating maps");
     let maps = generate_maps(first_map, last_map);
 
-    let current_game = GameData { current_map: first_map };
+    let gamedata = GameData { current_map: first_map };
 
     log::info!("Inserting resources");
     game.world.insert_resource(maps);
-    game.world.insert_resource(current_game);
+    game.world.insert_resource(gamedata);
 }
