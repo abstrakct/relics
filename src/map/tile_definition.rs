@@ -25,3 +25,14 @@ pub const BORDER_TILE: Tile = Tile {
     tile_destructable: false,
     tile_hitpoints: 0,
 };
+
+pub const FLOOT_TILE: Tile = Tile {
+    tile_type: TileType::Floor,
+    tile_revealed: false,
+    tile_visible: false,
+    tile_blocked: false,
+    tile_blocks_view: false,
+    tile_walkable: true,
+    tile_destructable: false,
+    tile_hitpoints: 0,
+};
