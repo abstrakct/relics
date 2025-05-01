@@ -6,7 +6,7 @@ use super::{Tile, TileType};
 
 pub const WALL_TILE: Tile = Tile {
     tile_type: TileType::Wall,
-    tile_revealed: true,
+    tile_revealed: false,
     tile_visible: false,
     tile_blocked: false,
     tile_blocks_view: true,
