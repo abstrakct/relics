@@ -51,6 +51,7 @@ impl Map {
         match self.get_tile_type(x, y) {
             TileType::Floor => '.',
             TileType::Wall => '#',
+            TileType::DungeonEntry => '§',
         }
     }
 

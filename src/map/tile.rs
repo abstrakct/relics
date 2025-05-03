@@ -5,6 +5,7 @@ pub enum TileType {
     #[default]
     Wall,
     Floor,
+    DungeonEntry,
 }
 
 #[derive(Clone, PartialEq, Eq, Deserialize, Serialize)]

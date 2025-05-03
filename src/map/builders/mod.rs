@@ -1,12 +1,12 @@
 use bevy::log::{debug, info};
+use meta::dungeon_entry_room_based::DungeonEntryRoomBased;
 
 mod initial;
 mod meta;
 
 use super::{Map, MapRect};
-use crate::rng;
-use initial::empty_map::EmptyMapBuilder;
-use initial::rooms::RoomsBuilder;
+use crate::{component::Position, rng};
+use initial::{empty_map::EmptyMapBuilder, rooms::RoomsBuilder};
 use meta::borders::Borders;
 use meta::reveal_all::RevealAll;
 use meta::room_drawer::RoomDrawer;
@@ -16,6 +16,7 @@ pub struct BuilderMap {
     pub width: usize,
     pub height: usize,
     pub rooms: Option<Vec<MapRect>>,
+    pub entry: Option<Position>,
 }
 
 pub trait InitialMapBuilder {
@@ -50,6 +51,7 @@ impl BuilderChain {
                 width,
                 height,
                 rooms: None,
+                entry: None,
             },
         }
     }
@@ -92,6 +94,7 @@ fn empty_map_builder(builder: &mut BuilderChain) {
         .start_with(EmptyMapBuilder::new())
         .add(RoomDrawer::new())
         .add(Borders::new())
+        .add(DungeonEntryRoomBased::new())
         .add(RevealAll::new());
 }
 
@@ -100,6 +103,7 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
         .start_with(RoomsBuilder::new())
         .add(RoomDrawer::new())
         .add(Borders::new())
+        .add(DungeonEntryRoomBased::new())
         .add(RevealAll::new());
 }
 

@@ -51,7 +51,6 @@ pub fn generate_world(world: &mut World) {
 
     info!("Spawning player entity");
     let player = player::spawn(world);
-    // info!("Spawned player entity: {:?} at {:?}", player.id(), player.location());
     utils::print_entity_components(world, player);
 
     // Change game state
