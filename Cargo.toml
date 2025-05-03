@@ -5,8 +5,10 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1"
-bevy_ecs = "0.16"
+# bevy = { version = "0.16", default-features = false, features = ["bevy_remote", "bevy_state", "bevy_log", "bevy_dev_tools"] }
 bevy = { version = "0.16", default-features = false, features = ["bevy_state", "bevy_log", "bevy_dev_tools"] }
+bevy_dev_tools = "0.16"
+bevy_ecs = "0.16"
 bevy_ratatui = "0.8.3"
 bracket-random = "0.8.7"
 clap = { version = "4.5", features = ["derive"] }
@@ -33,6 +35,3 @@ chrono = "0.4"
 [build-dependencies]
 anyhow = "1"
 vergen-git2 = { version = "1.0", features = ["build", "rustc", "si", "cargo"] }
-
-[dev-dependencies]
-bevy_dev_tools = "0.16"

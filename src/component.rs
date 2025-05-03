@@ -124,8 +124,8 @@ pub struct Attribute {
 // Marker components //
 //-------------------//
 
-#[derive(Component, Default, Serialize, Deserialize)]
-#[require(Position, Render, Name, Stats, Attributes)]
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+#[require(Position, Render, Name, DetailedName, Stats, Attributes)]
 pub struct Player;
 
 //----------------------//
@@ -148,8 +148,8 @@ pub struct Render {
     pub always: bool,
 }
 
-#[derive(Component, Default, Serialize, Deserialize)]
-pub struct Name {
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct DetailedName {
     pub base: String,
     pub full: String,
 }

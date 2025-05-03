@@ -1,8 +1,11 @@
 use bevy::dev_tools::states::*;
 use bevy::log::*;
+// use bevy::remote::RemotePlugin;
+// use bevy::remote::http::RemoteHttpPlugin;
 use bevy::{app::ScheduleRunnerPlugin, prelude::*, state::app::StatesPlugin};
-use bevy_ratatui::{RatatuiPlugins, event::KeyEvent, terminal::RatatuiContext};
+use bevy_ratatui::{RatatuiPlugins, event::KeyEvent};
 use clap::Parser;
+use component::Position;
 use serde::{Deserialize, Serialize};
 use std::{
     env,
@@ -16,10 +19,12 @@ mod config;
 mod game;
 mod game_event;
 mod map;
+mod player;
 mod rng;
 mod system;
 mod ui;
 mod ui_component;
+mod utils;
 mod worldgen;
 
 use cli::CliArgs;
@@ -27,6 +32,7 @@ pub use config::*;
 use game::CurrentGameData;
 pub use game_event::*;
 use map::Maps;
+pub use player::*;
 pub use rng::*;
 use system::ui_render::ui_render_system;
 pub use ui::*;
@@ -113,11 +119,15 @@ fn main() {
     let frame_time = Duration::from_secs_f32(1.0 / 60.0);
 
     App::new()
+        // .add_plugins(DefaultPlugins)
         .add_plugins((
             MinimalPlugins.set(ScheduleRunnerPlugin::run_loop(frame_time)),
             RatatuiPlugins::default(),
+            // RemotePlugin::default(),
+            // RemoteHttpPlugin::default(),
             StatesPlugin,
         ))
+        // .add_plugins(DefaultPlugins)
         // States
         .init_state::<GameState>()
         .add_sub_state::<MenuState>()
@@ -134,6 +144,7 @@ fn main() {
         .add_systems(PreUpdate, keyboard_input_system)
         .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
+        .add_systems(Update, log_positions)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         // State transition schedules
@@ -144,6 +155,18 @@ fn main() {
         .add_systems(OnEnter(GameState::InGame), show_game_ui)
         .add_systems(OnExit(GameState::InGame), hide_game_ui)
         .run();
+}
+
+fn log_positions(query: Query<(Entity, &Position)>) {
+    for (entity, position) in &query {
+        info_once!(
+            "Entity {} is at position: x {}, y {}, map {}",
+            entity,
+            position.x,
+            position.y,
+            position.map
+        );
+    }
 }
 
 fn game_event_handler(
