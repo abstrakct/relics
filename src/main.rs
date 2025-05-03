@@ -8,7 +8,6 @@ use std::{
     env,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-// use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 mod cli;
@@ -139,33 +138,7 @@ fn main() {
         .run();
 }
 
-// fn setup_logging() {
-//     ////// Start logger
-//     let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
-//     let log_file = format!("{}_{}.log", env!("CARGO_PKG_NAME"), timestamp);
-//     let log_file_path = std::path::Path::new("logs").join(log_file.clone());
-//     let file_appender =
-//         tracing_appender::rolling::RollingFileAppender::new(tracing_appender::rolling::Rotation::NEVER, "logs", log_file);
-//     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-
-//     // Create symlink to current log file
-//     let symlink_path = std::path::Path::new("current-log");
-//     if symlink_path.exists() {
-//         std::fs::remove_file(symlink_path).unwrap_or_else(|e| warn!("Failed to remove old symlink: {}", e));
-//     }
-//     std::os::unix::fs::symlink(log_file_path, symlink_path).unwrap_or_else(|e| warn!("Failed to create symlink: {}", e));
-
-//     tracing_subscriber::registry()
-//         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
-//         .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
-//         .init();
-
-//     info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
-// }
-
 fn game_event_handler(
-    // mut game_events: EventReader<GameEvent>,
-    // mut game_events_writer: EventWriter<GameEvent>,
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
@@ -187,7 +160,6 @@ fn game_event_handler(
         for (name, uicomponent) in ui_components.comps.iter_mut() {
             if let Ok(Some(ev)) = uicomponent.component.update(event.clone()) {
                 debug!("UI component '{}' produced new event '{:?}'", name, ev);
-                // game_events_writer.write(ev);
                 events_to_send.push(ev.clone());
             }
         }
@@ -205,11 +177,11 @@ fn keyboard_input_system(
     state: Res<State<GameState>>,
 ) {
     for event in events.read() {
-        debug!("key event received: {event:?}");
+        debug!("KeyEvent received: {event:?}");
         if let Some(keymap) = uiconfig.keybindings.get(&state) {
             // debug!("keymap found: {keymap:?}");
             if let Some(ge) = keymap.get(&vec![crossterm::event::KeyEvent::new(event.code, event.modifiers)]) {
-                debug!("Key pressed for action/gameevent: {ge:?}");
+                debug!("Key pressed for game event: {ge:?}");
                 game_events.write(ge.clone());
                 //     // action_tx.send(action.clone())?;
                 // } else {
@@ -289,7 +261,6 @@ fn draw_ui_system(mut context: ResMut<RatatuiContext>, mut ui_components: ResMut
             let r = uicomponent.component.draw(f, f.area());
             if let Err(e) = r {
                 error!("Failed to draw: {:?}", e);
-                // action_tx.send(Action::Error(format!("Failed to draw: {:?}", e))).unwrap();
             }
         }
     })?;
