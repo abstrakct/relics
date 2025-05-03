@@ -1,7 +1,6 @@
 {
   "keybindings": {
     "Menu": {
-      "<q>": "Quit",
       "<esc>": "Quit",
       "<j>": "NextMenuItem",
       "<k>": "PrevMenuItem",
@@ -10,7 +9,7 @@
       "<enter>": "SelectMenuItem"
     },
     "InGame": {
-      "<esc>": "Quit",
+      "<esc>": "ShowMainMenu",
       "<j>": { "PlayerMove": { "x": 0, "y": 1 } },
       "<k>": { "PlayerMove": { "x": 0, "y": -1 } },
       "<h>": { "PlayerMove": { "x": -1, "y": 0 } },

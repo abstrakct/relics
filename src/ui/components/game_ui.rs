@@ -7,20 +7,20 @@ use ratatui::prelude::*;
 // use tokio::sync::mpsc::UnboundedSender;
 
 use crate::UIComponent;
-use crate::component::{Position, Renderable};
+use crate::component::{Position, Render};
 use crate::game_event::GameEvent;
 use crate::map::{Map, camera::Camera};
 
 #[derive(Default)]
-pub struct Hud {
+pub struct GameUi {
     // command_tx: Option<UnboundedSender<GameEvent>>,
     // config: UIConfig,
     player_pos: Position,
     map: Map,
-    entities: Vec<(Position, Renderable)>,
+    entities: Vec<(Position, Render)>,
 }
 
-impl Hud {
+impl GameUi {
     pub fn new() -> Self {
         Self::default()
     }
@@ -37,13 +37,13 @@ impl Hud {
         self
     }
 
-    pub fn set_entities(&mut self, entities: Vec<(Position, Renderable)>) -> &mut Self {
+    pub fn set_entities(&mut self, entities: Vec<(Position, Render)>) -> &mut Self {
         self.entities = entities;
         self
     }
 }
 
-impl UIComponent for Hud {
+impl UIComponent for GameUi {
     // fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
     //     self.command_tx = Some(tx);
     //     Ok(())

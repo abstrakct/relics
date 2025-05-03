@@ -24,7 +24,9 @@ mod worldgen;
 
 use cli::CliArgs;
 pub use config::*;
+use game::CurrentGameData;
 pub use game_event::*;
+use map::Maps;
 pub use rng::*;
 use system::ui_render::ui_render_system;
 pub use ui::*;
@@ -43,6 +45,9 @@ pub const VERSION_STRING: &str = concat!(
     ")"
 );
 
+pub const MAIN_MENU_NAME: &str = "main_menu";
+pub const GAME_UI_NAME: &str = "game_ui";
+
 // Later maybe we want a Menu state with various SubStates for the different menus?
 #[derive(States, Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameState {
@@ -50,6 +55,7 @@ pub enum GameState {
     ApplicationStart,
     Menu,
     WorldGen,
+    NewGame,
     InGame,
 }
 
@@ -132,7 +138,11 @@ fn main() {
         .add_systems(Update, log_transitions::<MenuState>)
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
+        .add_systems(OnExit(MenuState::MainMenu), hide_main_menu)
         .add_systems(OnEnter(GameState::WorldGen), generate_world)
+        .add_systems(OnEnter(GameState::NewGame), setup_new_game)
+        .add_systems(OnEnter(GameState::InGame), show_game_ui)
+        .add_systems(OnExit(GameState::InGame), hide_game_ui)
         .run();
 }
 
@@ -150,8 +160,13 @@ fn game_event_handler(
                 app_exit.write_default();
             }
             GameEvent::GenerateWorld => {
-                debug!("Generating world...");
                 next_state.set(GameState::WorldGen);
+            }
+            GameEvent::StartNewGame => {
+                next_state.set(GameState::NewGame);
+            }
+            GameEvent::ShowMainMenu => {
+                next_state.set(GameState::Menu);
             }
             _ => {}
         }
@@ -205,7 +220,7 @@ fn enter_main_menu(mut next_game_state: ResMut<NextState<GameState>>, mut next_m
 fn show_main_menu(mut uicomps: ResMut<UIComponents>) {
     let c = uicomps
         .comps
-        .get_mut("main_menu")
+        .get_mut(MAIN_MENU_NAME)
         .unwrap_or_else(|| panic!("Couldn't find main_menu UI component."));
     c.visible = true;
 }
@@ -213,9 +228,45 @@ fn show_main_menu(mut uicomps: ResMut<UIComponents>) {
 fn hide_main_menu(mut uicomps: ResMut<UIComponents>) {
     let c = uicomps
         .comps
-        .get_mut("main_menu")
+        .get_mut(MAIN_MENU_NAME)
         .unwrap_or_else(|| panic!("Couldn't find main_menu UI component."));
     c.visible = false;
+}
+
+fn show_game_ui(mut uicomps: ResMut<UIComponents>) {
+    let c = uicomps
+        .comps
+        .get_mut(GAME_UI_NAME)
+        .unwrap_or_else(|| panic!("Couldn't find game_ui UI component."));
+    c.visible = true;
+}
+
+fn hide_game_ui(mut uicomps: ResMut<UIComponents>) {
+    let c = uicomps
+        .comps
+        .get_mut(GAME_UI_NAME)
+        .unwrap_or_else(|| panic!("Couldn't find game_ui UI component."));
+    c.visible = false;
+}
+
+fn setup_new_game(
+    cgd: Res<CurrentGameData>,
+    maps: Res<Maps>,
+    mut uicomps: ResMut<UIComponents>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    // Update GameUi with current map
+    let mut hud = ui::components::GameUi::new();
+    hud.set_map(maps.map[cgd.current_map].clone());
+    uicomps.comps.insert(
+        GAME_UI_NAME.to_string(),
+        UIComponentData {
+            component: Box::new(hud) as Box<dyn UIComponent>,
+            visible: true,
+        },
+    );
+
+    next_state.set(GameState::InGame);
 }
 
 fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UIComponents>) {
@@ -244,19 +295,19 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
         .add_item(("Quit", Some(GameEvent::Quit)));
 
     // UIMap UI component
-    let hud = ui::components::Hud::new();
+    let game_ui = ui::components::GameUi::new();
 
     uicomps.comps.insert(
-        "main_menu".to_string(),
+        MAIN_MENU_NAME.to_string(),
         UIComponentData {
             component: Box::new(main_menu) as Box<dyn UIComponent>,
             visible: false,
         },
     );
     uicomps.comps.insert(
-        "hud".to_string(),
+        GAME_UI_NAME.to_string(),
         UIComponentData {
-            component: Box::new(hud) as Box<dyn UIComponent>,
+            component: Box::new(game_ui) as Box<dyn UIComponent>,
             visible: false,
         },
     );

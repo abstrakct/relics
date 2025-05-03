@@ -8,17 +8,17 @@ use strum::Display;
 
 #[derive(Event, Debug, Clone, PartialEq, Eq, Serialize, Display, Deserialize)]
 pub enum GameEvent {
-    // Tick,
     Quit,
-    // Suspend,
-    // Render,
-    // Resize(u16, u16),
+    ShowMainMenu,
     GenerateWorld,
     StartNewGame,
     NextMenuItem,
     PrevMenuItem,
     SelectMenuItem,
     PlayerMove { x: i32, y: i32 },
+    // Suspend,
+    // Tick,
+    // Render,
+    // Resize(u16, u16),
     // Error(String),
 }
-

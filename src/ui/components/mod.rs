@@ -1,10 +1,10 @@
+mod game_ui;
 mod home;
-mod hud;
 mod menu;
 
 use crate::UIComponent;
+pub use game_ui::*;
 pub use home::*;
-pub use hud::*;
 pub use menu::*;
 
 use bevy_ecs::resource::Resource;
