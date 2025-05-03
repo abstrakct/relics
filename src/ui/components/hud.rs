@@ -6,14 +6,14 @@ use bevy::log::debug;
 use ratatui::prelude::*;
 use tokio::sync::mpsc::UnboundedSender;
 
-use crate::action::Action;
+use crate::action::GameEvent;
 use crate::component::{Position, Renderable};
 use crate::map::{Map, camera::Camera};
 use crate::{UIComponent, UIConfig};
 
 #[derive(Default)]
 pub struct Hud {
-    command_tx: Option<UnboundedSender<Action>>,
+    command_tx: Option<UnboundedSender<GameEvent>>,
     config: UIConfig,
     player_pos: Position,
     map: Map,
@@ -44,7 +44,7 @@ impl Hud {
 }
 
 impl UIComponent for Hud {
-    fn register_action_handler(&mut self, tx: UnboundedSender<Action>) -> Result<()> {
+    fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
         self.command_tx = Some(tx);
         Ok(())
     }
@@ -54,7 +54,7 @@ impl UIComponent for Hud {
         Ok(())
     }
 
-    fn update(&mut self, _action: Action) -> Result<Option<Action>> {
+    fn update(&mut self, _action: GameEvent) -> Result<Option<GameEvent>> {
         // match action {
         //     Action::Tick => {}
         //     _ => {}

@@ -6,7 +6,7 @@ use tokio::sync::mpsc::UnboundedSender;
 // pub mod components;
 
 // use crate::Event
-use crate::{action::Action, config::UIConfig};
+use crate::{action::GameEvent, config::UIConfig};
 use ratatui::Frame;
 
 /// `UIComponent` is a trait that represents a visual and interactive element of the user interface.
@@ -23,7 +23,7 @@ pub trait UIComponent: Send + Sync {
     ///
     /// * `Result<()>` - An Ok result or an error.
     #[allow(unused_variables)]
-    fn register_action_handler(&mut self, tx: UnboundedSender<Action>) -> Result<()> {
+    fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
         Ok(())
     }
 
@@ -82,7 +82,7 @@ pub trait UIComponent: Send + Sync {
     ///
     /// * `Result<Option<Action>>` - An action to be processed or none.
     #[allow(unused_variables)]
-    fn handle_key_events(&mut self, key: KeyEvent) -> Result<Option<Action>> {
+    fn handle_key_events(&mut self, key: KeyEvent) -> Result<Option<GameEvent>> {
         Ok(None)
     }
 
@@ -96,7 +96,7 @@ pub trait UIComponent: Send + Sync {
     ///
     /// * `Result<Option<Action>>` - An action to be processed or none.
     #[allow(unused_variables)]
-    fn handle_mouse_events(&mut self, mouse: MouseEvent) -> Result<Option<Action>> {
+    fn handle_mouse_events(&mut self, mouse: MouseEvent) -> Result<Option<GameEvent>> {
         Ok(None)
     }
 
@@ -110,7 +110,7 @@ pub trait UIComponent: Send + Sync {
     ///
     /// * `Result<Option<Action>>` - An action to be processed or none.
     #[allow(unused_variables)]
-    fn update(&mut self, action: Action) -> Result<Option<Action>> {
+    fn update(&mut self, action: GameEvent) -> Result<Option<GameEvent>> {
         Ok(None)
     }
 
