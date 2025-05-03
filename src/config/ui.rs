@@ -7,7 +7,7 @@ use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
 use std::{collections::HashMap, path::PathBuf};
 
-use crate::{GameEvent, GameState, ui_mode::UiMode};
+use crate::{GameEvent, GameState};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct AppConfig {
@@ -277,14 +277,14 @@ pub fn parse_key_sequence(raw: &str) -> Result<Vec<KeyEvent>, String> {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct Styles(pub HashMap<UiMode, HashMap<String, Style>>);
+pub struct Styles(pub HashMap<GameState, HashMap<String, Style>>);
 
 impl<'de> Deserialize<'de> for Styles {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<UiMode, HashMap<String, String>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<GameState, HashMap<String, String>>::deserialize(deserializer)?;
 
         let styles = parsed_map
             .into_iter()

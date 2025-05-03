@@ -20,7 +20,6 @@ mod rng;
 mod system;
 mod ui;
 mod ui_component;
-mod ui_mode;
 mod worldgen;
 
 use cli::CliArgs;
@@ -109,12 +108,6 @@ fn main() {
     App::new()
         .add_plugins((
             MinimalPlugins.set(ScheduleRunnerPlugin::run_loop(frame_time)),
-            // bevy::log::LogPlugin {
-            //     // Uncomment this to override the default log settings:
-            //     // level: bevy::log::Level::TRACE,
-            //     // filter: "wgpu=warn,bevy_ecs=info".to_string(),
-            //     ..default()
-            // },
             RatatuiPlugins::default(),
             StatesPlugin,
         ))
