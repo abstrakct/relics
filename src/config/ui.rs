@@ -7,7 +7,7 @@ use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
 use std::{collections::HashMap, path::PathBuf};
 
-use crate::{GameEvent, GameState, ui_mode::UiMode};
+use crate::{GameEvent, GameState, game_event::EventConvertible, ui_mode::UiMode};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct AppConfig {
@@ -82,27 +82,31 @@ impl UIConfig {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct KeyBindings(pub HashMap<GameState, HashMap<Vec<KeyEvent>, GameEvent>>);
+pub struct KeyBindings<E: EventConvertible = GameEvent>(pub HashMap<GameState, HashMap<Vec<KeyEvent>, E>>);
 
-impl<'de> Deserialize<'de> for KeyBindings {
+impl<'de, E: EventConvertible> Deserialize<'de> for KeyBindings<E> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<GameState, HashMap<String, GameEvent>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<GameState, HashMap<String, String>>::deserialize(deserializer)?;
 
         let keybindings = parsed_map
             .into_iter()
             .map(|(mode, inner_map)| {
                 let converted_inner_map = inner_map
                     .into_iter()
-                    .map(|(key_str, event)| (parse_key_sequence(&key_str).unwrap(), event))
+                    .filter_map(|(key_str, event_str)| {
+                        let key_events = parse_key_sequence(&key_str).ok()?;
+                        let event = E::from_str(&event_str)?;
+                        Some((key_events, event))
+                    })
                     .collect();
                 (mode, converted_inner_map)
             })
             .collect();
 
-        debug!("parsed keybindings: {keybindings:?}");
+        // debug!("parsed keybindings: {keybindings:?}");
         Ok(KeyBindings(keybindings))
     }
 }
