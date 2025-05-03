@@ -5,15 +5,15 @@ use anyhow::Result;
 use ratatui::{prelude::*, widgets::*};
 use tokio::sync::mpsc::UnboundedSender;
 
-use crate::action::Action;
+use crate::UIComponent;
+use crate::game_event::GameEvent;
 use crate::ui::centered_rect;
-use crate::{UIComponent, UIConfig};
 
 #[derive(Default)]
 pub struct Menu {
-    command_tx: Option<UnboundedSender<Action>>,
-    config: UIConfig,
-    items: Vec<(String, Option<Action>)>,
+    command_tx: Option<UnboundedSender<GameEvent>>,
+    // config: UIConfig, // this isn't used anywhere...
+    items: Vec<(String, Option<GameEvent>)>,
     state: ListState,
     index: usize,
     title: String,
@@ -24,8 +24,8 @@ impl Menu {
         Self::default()
     }
 
-    pub fn add_item<T: ToString>(&mut self, item: (T, Option<Action>)) -> &mut Self {
-        let o: (String, Option<Action>) = (item.0.to_string(), item.1);
+    pub fn add_item<T: ToString>(&mut self, item: (T, Option<GameEvent>)) -> &mut Self {
+        let o: (String, Option<GameEvent>) = (item.0.to_string(), item.1);
         self.items.push(o);
         self.index = 0;
         self.state.select(Some(self.index));
@@ -51,17 +51,17 @@ impl Menu {
 }
 
 impl UIComponent for Menu {
-    fn register_action_handler(&mut self, tx: UnboundedSender<Action>) -> Result<()> {
+    fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
         self.command_tx = Some(tx);
         Ok(())
     }
 
-    fn register_config_handler(&mut self, config: UIConfig) -> Result<()> {
-        self.config = config;
-        Ok(())
-    }
+    // fn register_config_handler(&mut self, config: UIConfig) -> Result<()> {
+    //     self.config = config;
+    //     Ok(())
+    // }
 
-    fn update(&mut self, action: Action) -> Result<Option<Action>> {
+    fn update(&mut self, action: GameEvent) -> Result<Option<GameEvent>> {
         // match action {
         //     Action::Tick => {}
         //     Action::NextMenuItem => {
@@ -70,13 +70,13 @@ impl UIComponent for Menu {
         //     }
         //     _ => {}
         // }
-        if let Action::NextMenuItem = action {
+        if let GameEvent::NextMenuItem = action {
             self.next_item()?
         }
-        if let Action::PrevMenuItem = action {
+        if let GameEvent::PrevMenuItem = action {
             self.prev_item()?
         }
-        if let Action::SelectMenuItem = action {
+        if let GameEvent::SelectMenuItem = action {
             let index = self.state.selected().unwrap();
             let action = self.items[index].1.clone();
             return Ok(action);

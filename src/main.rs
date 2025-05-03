@@ -11,11 +11,10 @@ use std::{
 // use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
-mod action;
 mod cli;
 mod component;
 mod config;
-mod gameevent;
+mod game_event;
 mod map;
 mod rng;
 mod system;
@@ -23,10 +22,9 @@ mod ui;
 mod ui_component;
 mod ui_mode;
 
-pub use action::*;
 use cli::CliArgs;
 pub use config::*;
-pub use gameevent::GameEvent;
+pub use game_event::*;
 pub use rng::*;
 pub use ui::*;
 pub use ui_component::*;
@@ -141,38 +139,54 @@ fn main() {
         .run();
 }
 
-fn setup_logging() {
-    ////// Start logger
-    let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
-    let log_file = format!("{}_{}.log", env!("CARGO_PKG_NAME"), timestamp);
-    let log_file_path = std::path::Path::new("logs").join(log_file.clone());
-    let file_appender =
-        tracing_appender::rolling::RollingFileAppender::new(tracing_appender::rolling::Rotation::NEVER, "logs", log_file);
-    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+// fn setup_logging() {
+//     ////// Start logger
+//     let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
+//     let log_file = format!("{}_{}.log", env!("CARGO_PKG_NAME"), timestamp);
+//     let log_file_path = std::path::Path::new("logs").join(log_file.clone());
+//     let file_appender =
+//         tracing_appender::rolling::RollingFileAppender::new(tracing_appender::rolling::Rotation::NEVER, "logs", log_file);
+//     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 
-    // Create symlink to current log file
-    let symlink_path = std::path::Path::new("current-log");
-    if symlink_path.exists() {
-        std::fs::remove_file(symlink_path).unwrap_or_else(|e| warn!("Failed to remove old symlink: {}", e));
-    }
-    std::os::unix::fs::symlink(log_file_path, symlink_path).unwrap_or_else(|e| warn!("Failed to create symlink: {}", e));
+//     // Create symlink to current log file
+//     let symlink_path = std::path::Path::new("current-log");
+//     if symlink_path.exists() {
+//         std::fs::remove_file(symlink_path).unwrap_or_else(|e| warn!("Failed to remove old symlink: {}", e));
+//     }
+//     std::os::unix::fs::symlink(log_file_path, symlink_path).unwrap_or_else(|e| warn!("Failed to create symlink: {}", e));
 
-    tracing_subscriber::registry()
-        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
-        .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
-        .init();
+//     tracing_subscriber::registry()
+//         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
+//         .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
+//         .init();
 
-    info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
-}
+//     info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
+// }
 
-fn game_event_handler(mut game_events: EventReader<GameEvent>, mut app_exit: EventWriter<AppExit>) {
+fn game_event_handler(
+    mut game_events: EventReader<GameEvent>,
+    // mut game_events_writer: EventWriter<GameEvent>,
+    mut app_exit: EventWriter<AppExit>,
+    mut ui_components: ResMut<UIComponents>,
+) {
     for event in game_events.read() {
         info!("Received: {:?}", event);
         match event {
             GameEvent::Quit => {
                 app_exit.write_default();
             }
+            GameEvent::GenerateWorld => {
+                debug!("Generating world...");
+            }
             _ => {}
+        }
+
+        // Now check if any UI components should handle this Event
+        for (name, uicomponent) in ui_components.comps.iter_mut() {
+            if let Ok(Some(ev)) = uicomponent.component.update(event.clone()) {
+                debug!("UI component '{}' produced new event '{:?}'", name, ev);
+                // game_events_writer.write(ev);
+            }
         }
     }
 }
@@ -237,10 +251,10 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
     let mut main_menu = ui::components::Menu::new();
     main_menu
         .set_title("Main Menu")
-        .add_item(("Generate World", Some(Action::GenerateWorld)))
-        .add_item(("New Game", Some(Action::StartNewGame)))
+        .add_item(("Generate World", Some(GameEvent::GenerateWorld)))
+        .add_item(("New Game", Some(GameEvent::StartNewGame)))
         .add_item(("Load Game", None))
-        .add_item(("Quit", Some(Action::Quit)));
+        .add_item(("Quit", Some(GameEvent::Quit)));
 
     // UIMap UI component
     let hud = ui::components::Hud::new();

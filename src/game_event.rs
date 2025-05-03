@@ -1,18 +1,24 @@
 use bevy_ecs::event::Event;
-use serde::{Deserialize, Serialize};
+use serde::{
+    // de::{self, Deserializer, Visitor},
+    Deserialize,
+    Serialize,
+};
 use strum::Display;
 
 #[derive(Event, Debug, Clone, PartialEq, Eq, Serialize, Display, Deserialize)]
 pub enum GameEvent {
-    // Generic events
+    // Tick,
     Quit,
-    // World events
+    // Suspend,
+    // Render,
+    // Resize(u16, u16),
     GenerateWorld,
-    // Menu events
     StartNewGame,
     NextMenuItem,
     PrevMenuItem,
     SelectMenuItem,
-    // Player events
     PlayerMove { x: i32, y: i32 },
+    // Error(String),
 }
+
