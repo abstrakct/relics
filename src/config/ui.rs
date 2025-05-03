@@ -1,22 +1,12 @@
 use anyhow::Result;
-// use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use bevy_ecs::resource::Resource;
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use derive_deref::{Deref, DerefMut};
 use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
 use std::{collections::HashMap, path::PathBuf};
-// use serde_json::Value as JsonValue;
 
-use crate::{action::Action, ui_mode::UiMode};
-
-// const UICONFIG: &str = include_str!("../../config/ui_config.json5");
-
-// #[derive(Clone, Debug, Deserialize)]
-// pub struct GameKeyEvent {
-//     pub code: KeyCode,
-//     pub modifiers: KeyModifiers,
-//     pub kind: KeyEventKind,
-// }
+use crate::{GameState, action::Action, ui_mode::UiMode};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct AppConfig {
@@ -26,7 +16,7 @@ pub struct AppConfig {
     pub _config_dir: PathBuf,
 }
 
-#[derive(Clone, Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize, Resource)]
 pub struct UIConfig {
     #[serde(default, flatten)]
     pub config: AppConfig,
@@ -37,6 +27,7 @@ pub struct UIConfig {
 }
 
 impl UIConfig {
+    // todo: we could impl default, to let bevy init_resource auto-load
     pub fn new() -> Result<Self, config::ConfigError> {
         // let default_config: UIConfig = json5::from_str(UICONFIG).unwrap();
         // let data_dir = crate::utils::get_data_dir();
@@ -90,14 +81,14 @@ impl UIConfig {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct KeyBindings(pub HashMap<UiMode, HashMap<Vec<KeyEvent>, Action>>);
+pub struct KeyBindings(pub HashMap<GameState, HashMap<Vec<KeyEvent>, Action>>);
 
 impl<'de> Deserialize<'de> for KeyBindings {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<UiMode, HashMap<String, Action>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<GameState, HashMap<String, Action>>::deserialize(deserializer)?;
 
         let keybindings = parsed_map
             .into_iter()

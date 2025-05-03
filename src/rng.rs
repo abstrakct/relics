@@ -1,9 +1,14 @@
+use bevy::ecs::resource::Resource;
 use bracket_random::prelude::RandomNumberGenerator;
 use std::sync::Mutex;
 
 lazy_static! {
     static ref RNG: Mutex<RandomNumberGenerator> = Mutex::new(RandomNumberGenerator::new());
 }
+
+// todo: consider moving to a file like resources.rs
+#[derive(Resource, Default)]
+pub struct Seed(pub u64);
 
 pub fn reseed(seed: u64) {
     *RNG.lock().unwrap() = RandomNumberGenerator::seeded(seed);

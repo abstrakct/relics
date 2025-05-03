@@ -8,7 +8,6 @@ use tokio::sync::mpsc::UnboundedSender;
 use crate::action::Action;
 use crate::component::{Position, Renderable};
 use crate::map::{Map, camera::Camera};
-use crate::tui::Frame;
 use crate::{UIComponent, UIConfig};
 
 #[derive(Default)]

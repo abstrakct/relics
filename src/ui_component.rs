@@ -5,16 +5,14 @@ use tokio::sync::mpsc::UnboundedSender;
 
 // pub mod components;
 
-use crate::{
-    action::Action,
-    config::UIConfig,
-    tui::{Event, Frame},
-};
+// use crate::Event
+use crate::{action::Action, config::UIConfig};
+use ratatui::Frame;
 
 /// `UIComponent` is a trait that represents a visual and interactive element of the user interface.
 /// Implementors of this trait can be registered with the main application loop and will be able to receive events,
 /// update state, and be rendered on the screen.
-pub trait UIComponent {
+pub trait UIComponent: Send + Sync {
     /// Register an action handler that can send actions for processing if necessary.
     ///
     /// # Arguments
@@ -65,14 +63,14 @@ pub trait UIComponent {
     /// # Returns
     ///
     /// * `Result<Option<Action>>` - An action to be processed or none.
-    fn handle_events(&mut self, event: Option<Event>) -> Result<Option<Action>> {
-        let r = match event {
-            Some(Event::Key(key_event)) => self.handle_key_events(key_event)?,
-            Some(Event::Mouse(mouse_event)) => self.handle_mouse_events(mouse_event)?,
-            _ => None,
-        };
-        Ok(r)
-    }
+    // fn handle_events(&mut self, event: Option<Event>) -> Result<Option<Action>> {
+    //     let r = match event {
+    //         Some(Event::Key(key_event)) => self.handle_key_events(key_event)?,
+    //         Some(Event::Mouse(mouse_event)) => self.handle_mouse_events(mouse_event)?,
+    //         _ => None,
+    //     };
+    //     Ok(r)
+    // }
 
     /// Handle key events and produce actions if necessary.
     ///

@@ -6,7 +6,7 @@ use ratatui::{prelude::*, widgets::*};
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::action::Action;
-use crate::tui::Frame;
+// use crate::tui::Frame;
 use crate::{UIComponent, UIConfig};
 
 #[derive(Default)]
