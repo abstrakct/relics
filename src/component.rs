@@ -125,7 +125,7 @@ pub struct Attribute {
 //-------------------//
 
 #[derive(Component, Default, Serialize, Deserialize)]
-#[require(Position, Renderable, Name, Stats, Attributes)]
+#[require(Position, Render, Name, Stats, Attributes)]
 pub struct Player;
 
 //----------------------//
@@ -140,7 +140,7 @@ pub struct Position {
 }
 
 #[derive(Component, Default, Serialize, Deserialize)]
-pub struct Renderable {
+pub struct Render {
     pub glyph: char,
     pub fg: Color,
     pub bg: Color,
