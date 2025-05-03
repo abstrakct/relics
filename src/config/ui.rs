@@ -1,4 +1,5 @@
 use anyhow::Result;
+use bevy::log::{debug, warn};
 use bevy_ecs::resource::Resource;
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use derive_deref::{Deref, DerefMut};
@@ -56,7 +57,7 @@ impl UIConfig {
             }
         }
         if !found_config {
-            log::warn!("No ui configuration file found. Application may not behave as expected");
+            warn!("No ui configuration file found. Application may not behave as expected");
         }
 
         let mut cfg: Self = builder.build()?.try_deserialize()?;
@@ -101,7 +102,7 @@ impl<'de> Deserialize<'de> for KeyBindings {
             })
             .collect();
 
-        log::debug!("parsed keybindings: {keybindings:?}");
+        debug!("parsed keybindings: {keybindings:?}");
         Ok(KeyBindings(keybindings))
     }
 }

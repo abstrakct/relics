@@ -2,6 +2,7 @@
 // use serde::{Deserialize, Serialize};
 // use std::{collections::HashMap, time::Duration};
 use anyhow::Result;
+use bevy::log::debug;
 use ratatui::prelude::*;
 use tokio::sync::mpsc::UnboundedSender;
 
@@ -25,13 +26,13 @@ impl Hud {
     }
 
     pub fn set_player_pos(&mut self, player_pos: Position) -> &mut Self {
-        log::debug!("set_player_pos: {:?}", player_pos);
+        debug!("set_player_pos: {:?}", player_pos);
         self.player_pos = player_pos;
         self
     }
 
     pub fn set_map(&mut self, map: Map) -> &mut Self {
-        log::debug!("set_map: name: {} / width: {} / height: {} ", map.name, map.width, map.height);
+        debug!("set_map: name: {} / width: {} / height: {} ", map.name, map.width, map.height);
         self.map = map;
         self
     }

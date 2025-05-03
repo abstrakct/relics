@@ -1,3 +1,5 @@
+use bevy::log::{debug, info};
+
 mod initial;
 mod meta;
 
@@ -20,7 +22,7 @@ pub trait InitialMapBuilder {
     fn build(&mut self, build_data: &mut BuilderMap);
 
     fn debug_log(&self) {
-        log::debug!("InitialMapBuilder: {:?}", std::any::type_name::<Self>());
+        debug!("InitialMapBuilder: {:?}", std::any::type_name::<Self>());
     }
 }
 
@@ -28,7 +30,7 @@ pub trait MetaMapBuilder {
     fn build(&mut self, build_data: &mut BuilderMap);
 
     fn debug_log(&self) {
-        log::debug!("Next MetaMapBuilder: {:?}", std::any::type_name::<Self>());
+        debug!("Next MetaMapBuilder: {:?}", std::any::type_name::<Self>());
     }
 }
 
@@ -120,6 +122,6 @@ pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize
 }
 
 pub fn generate_builder_chain(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
-    log::info!("Building map: {map_name} using random_builder");
+    info!("Building map: {map_name} using random_builder");
     random_builder(map_id, map_name, width, height)
 }

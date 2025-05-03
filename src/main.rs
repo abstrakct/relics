@@ -1,15 +1,15 @@
-// use bevy::dev_tools::states::*;
+use bevy::dev_tools::states::*;
+use bevy::log::{self, *};
 use bevy::{app::ScheduleRunnerPlugin, prelude::*, state::app::StatesPlugin};
 use bevy_ratatui::{RatatuiPlugins, event::KeyEvent, terminal::RatatuiContext};
 use clap::Parser;
-use crossterm::event::KeyCode;
-use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
-use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
 use std::{
     env,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 mod action;
 mod cli;
@@ -45,6 +45,7 @@ pub const VERSION_STRING: &str = concat!(
 #[derive(States, Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameState {
     #[default]
+    ApplicationStart,
     Menu,
     InGame,
 }
@@ -60,23 +61,13 @@ pub enum MenuState {
 }
 
 fn main() {
-    ////// Start logger
-    let _logger = Logger::try_with_env_or_str("info")
-        .unwrap()
-        .log_to_file(FileSpec::default().directory("logs").basename(env!("CARGO_PKG_NAME")))
-        .write_mode(WriteMode::BufferAndFlush)
-        .duplicate_to_stderr(Duplicate::Warn)
-        .create_symlink("current-log")
-        .format_for_files(flexi_logger::detailed_format)
-        .start();
+    setup_logging();
 
-    info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
-
-    ////// Load config
+    ///// Load config
     debug!("Loading config files");
     config::load_config(None, None);
 
-    ////// Parse CLI args
+    ///// Parse CLI args
     let args = CliArgs::parse();
 
     let seed;
@@ -96,33 +87,62 @@ fn main() {
     App::new()
         .add_plugins((
             MinimalPlugins.set(ScheduleRunnerPlugin::run_loop(frame_time)),
+            // bevy::log::LogPlugin {
+            //     // Uncomment this to override the default log settings:
+            //     // level: bevy::log::Level::TRACE,
+            //     // filter: "wgpu=warn,bevy_ecs=info".to_string(),
+            //     ..default()
+            // },
             RatatuiPlugins::default(),
             StatesPlugin,
         ))
+        // States
         .init_state::<GameState>()
         .add_sub_state::<MenuState>()
+        // Resources
         .init_resource::<UIConfig>()
         .init_resource::<UIComponents>()
         .insert_resource(seed)
+        // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
-        .add_systems(Startup, show_main_menu)
+        .add_systems(Startup, enter_main_menu)
+        // Update schedule
         .add_systems(PreUpdate, keyboard_input_system)
         .add_systems(Update, draw_ui_system)
+        .add_systems(Update, log_transitions::<GameState>)
+        .add_systems(Update, log_transitions::<MenuState>)
+        // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
         .run();
 }
 
-// fn startup() {
-//     debug!("Startup schedule")
-// }
+fn setup_logging() {
+    ////// Start logger
+    let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
+    let log_file = format!("{}_{}.log", env!("CARGO_PKG_NAME"), timestamp);
+    let log_file_path = std::path::Path::new("logs").join(log_file.clone());
+    let file_appender =
+        tracing_appender::rolling::RollingFileAppender::new(tracing_appender::rolling::Rotation::NEVER, "logs", log_file);
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 
-// fn poststartup() {
-//     debug!("PostStartup schedule")
-// }
+    // Create symlink to current log file
+    let symlink_path = std::path::Path::new("current-log");
+    if symlink_path.exists() {
+        std::fs::remove_file(symlink_path).unwrap_or_else(|e| warn!("Failed to remove old symlink: {}", e));
+    }
+    std::os::unix::fs::symlink(log_file_path, symlink_path).unwrap_or_else(|e| warn!("Failed to create symlink: {}", e));
+
+    tracing_subscriber::registry()
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
+        .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
+        .init();
+
+    info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
+}
 
 fn keyboard_input_system(
     mut events: EventReader<KeyEvent>,
-    mut app_exit: EventWriter<AppExit>,
+    // mut app_exit: EventWriter<AppExit>,
     uiconfig: Res<UIConfig>,
     state: Res<State<GameState>>,
 ) {
@@ -130,8 +150,7 @@ fn keyboard_input_system(
         debug!("key event received: {event:?}");
         if let Some(keymap) = uiconfig.keybindings.get(&state) {
             // debug!("keymap found: {keymap:?}");
-            let v = vec![crossterm::event::KeyEvent::new(event.code, event.modifiers)];
-            if let Some(action) = keymap.get(&v) {
+            if let Some(action) = keymap.get(&vec![crossterm::event::KeyEvent::new(event.code, event.modifiers)]) {
                 debug!("Key pressed for action: {action:?}");
                 //     // action_tx.send(action.clone())?;
                 // } else {
@@ -144,6 +163,12 @@ fn keyboard_input_system(
             }
         }
     }
+}
+
+fn enter_main_menu(mut next_game_state: ResMut<NextState<GameState>>, mut next_menu_state: ResMut<NextState<MenuState>>) {
+    bevy::log::info!("Entering main menu");
+    next_game_state.set(GameState::Menu);
+    next_menu_state.set(MenuState::MainMenu);
 }
 
 fn show_main_menu(mut uicomps: ResMut<UIComponents>) {

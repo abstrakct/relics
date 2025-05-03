@@ -1,3 +1,5 @@
+use bevy::log::{debug, info};
+
 use super::{BuilderMap, MetaMapBuilder};
 use crate::map::{FLOOR_TILE, MapRect};
 
@@ -28,7 +30,7 @@ impl RoomDrawer {
     }
 
     pub fn build_map(&mut self, build_data: &mut BuilderMap) {
-        log::debug!("In RoomDrawer meta map builder build_map()");
+        debug!("In RoomDrawer meta map builder build_map()");
 
         let rooms: Vec<MapRect>;
         if let Some(rooms_builder) = &build_data.rooms {
@@ -39,7 +41,7 @@ impl RoomDrawer {
         }
 
         for room in rooms.iter() {
-            log::info!("building room in rectangle shape: {:?}", room);
+            info!("building room in rectangle shape: {:?}", room);
             self.rectangle(build_data, room);
         }
     }

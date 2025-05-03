@@ -1,4 +1,4 @@
-use log::{debug, info};
+use bevy::log::{debug, info};
 use serde::Deserialize;
 use std::fs;
 use std::sync::Mutex;
