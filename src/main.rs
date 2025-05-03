@@ -26,6 +26,7 @@ use cli::CliArgs;
 pub use config::*;
 pub use game_event::*;
 pub use rng::*;
+use system::ui_render::ui_render_system;
 pub use ui::*;
 pub use ui_component::*;
 use worldgen::generate_world;
@@ -125,7 +126,7 @@ fn main() {
         .add_systems(Startup, enter_main_menu)
         // Update schedule
         .add_systems(PreUpdate, keyboard_input_system)
-        .add_systems(Update, draw_ui_system)
+        .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
@@ -251,18 +252,4 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
             visible: false,
         },
     );
-}
-
-fn draw_ui_system(mut context: ResMut<RatatuiContext>, mut ui_components: ResMut<UIComponents>) -> Result {
-    context.draw(|f| {
-        for (_component_name, uicomponent) in ui_components.comps.iter_mut().filter(|x| x.1.visible) {
-            // log::debug!("Drawing component: {}", component_name);
-            let r = uicomponent.component.draw(f, f.area());
-            if let Err(e) = r {
-                error!("Failed to draw: {:?}", e);
-            }
-        }
-    })?;
-
-    Ok(())
 }
