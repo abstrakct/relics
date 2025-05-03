@@ -63,7 +63,27 @@ pub enum MenuState {
 }
 
 fn main() {
-    setup_logging();
+    ////// Start logger
+    let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
+    let log_file = format!("{}_{}.log", env!("CARGO_PKG_NAME"), timestamp);
+    let log_file_path = std::path::Path::new("logs").join(log_file.clone());
+    let file_appender =
+        tracing_appender::rolling::RollingFileAppender::new(tracing_appender::rolling::Rotation::NEVER, "logs", log_file);
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
+    // Create symlink to current log file
+    let symlink_path = std::path::Path::new("current-log");
+    if symlink_path.exists() {
+        std::fs::remove_file(symlink_path).unwrap_or_else(|e| warn!("Failed to remove old symlink: {}", e));
+    }
+    std::os::unix::fs::symlink(log_file_path, symlink_path).unwrap_or_else(|e| warn!("Failed to create symlink: {}", e));
+
+    tracing_subscriber::registry()
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
+        .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
+        .init();
+
+    info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
 
     ///// Load config
     debug!("Loading config files");
