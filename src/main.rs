@@ -237,10 +237,10 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
     let mut main_menu = ui::components::Menu::new();
     main_menu
         .set_title("Main Menu")
-        .add_item(("Generate World", Some(GameEvent::GenerateWorld)))
-        .add_item(("New Game", Some(GameEvent::StartNewGame)))
+        .add_item(("Generate World", Some(Action::GenerateWorld)))
+        .add_item(("New Game", Some(Action::StartNewGame)))
         .add_item(("Load Game", None))
-        .add_item(("Quit", Some(GameEvent::Quit)));
+        .add_item(("Quit", Some(Action::Quit)));
 
     // UIMap UI component
     let hud = ui::components::Hud::new();

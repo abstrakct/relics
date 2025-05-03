@@ -6,7 +6,7 @@ use serde::{
 use strum::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Display, Deserialize)]
-pub enum GameEvent {
+pub enum Action {
     Tick,
     Quit,
     Suspend,

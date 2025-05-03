@@ -5,13 +5,13 @@ use anyhow::Result;
 use ratatui::{prelude::*, widgets::*};
 use tokio::sync::mpsc::UnboundedSender;
 
-use crate::action::GameEvent;
+use crate::action::Action;
 // use crate::tui::Frame;
 use crate::{UIComponent, UIConfig};
 
 #[derive(Default)]
 pub struct Home {
-    command_tx: Option<UnboundedSender<GameEvent>>,
+    command_tx: Option<UnboundedSender<Action>>,
     config: UIConfig,
 }
 
@@ -22,7 +22,7 @@ impl Home {
 }
 
 impl UIComponent for Home {
-    fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
+    fn register_action_handler(&mut self, tx: UnboundedSender<Action>) -> Result<()> {
         self.command_tx = Some(tx);
         Ok(())
     }
@@ -32,7 +32,7 @@ impl UIComponent for Home {
         Ok(())
     }
 
-    fn update(&mut self, _action: GameEvent) -> Result<Option<GameEvent>> {
+    fn update(&mut self, _action: Action) -> Result<Option<Action>> {
         // match action {
         //     Action::Tick => {}
         //     _ => {}
