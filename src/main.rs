@@ -164,12 +164,14 @@ fn main() {
 // }
 
 fn game_event_handler(
-    mut game_events: EventReader<GameEvent>,
+    // mut game_events: EventReader<GameEvent>,
     // mut game_events_writer: EventWriter<GameEvent>,
+    mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
 ) {
-    for event in game_events.read() {
+    let mut events_to_send = Vec::new();
+    for event in param_set.p0().read() {
         info!("Received: {:?}", event);
         match event {
             GameEvent::Quit => {
@@ -186,8 +188,13 @@ fn game_event_handler(
             if let Ok(Some(ev)) = uicomponent.component.update(event.clone()) {
                 debug!("UI component '{}' produced new event '{:?}'", name, ev);
                 // game_events_writer.write(ev);
+                events_to_send.push(ev.clone());
             }
         }
+    }
+
+    for event in events_to_send {
+        param_set.p1().write(event);
     }
 }
 
