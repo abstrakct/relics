@@ -165,15 +165,20 @@ fn setup_logging() {
     info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
 }
 
-fn game_event_handler(mut game_events: EventReader<GameEvent>) {
+fn game_event_handler(mut game_events: EventReader<GameEvent>, mut app_exit: EventWriter<AppExit>) {
     for event in game_events.read() {
         info!("Received: {:?}", event);
+        match event {
+            GameEvent::Quit => {
+                app_exit.write_default();
+            }
+            _ => {}
+        }
     }
 }
 
 fn keyboard_input_system(
     mut events: EventReader<KeyEvent>,
-    // mut app_exit: EventWriter<AppExit>,
     mut game_events: EventWriter<GameEvent>,
     uiconfig: Res<UIConfig>,
     state: Res<State<GameState>>,
