@@ -7,7 +7,7 @@ use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, de::Deserializer};
 use std::{collections::HashMap, path::PathBuf};
 
-use crate::{GameState, action::Action, ui_mode::UiMode};
+use crate::{GameEvent, GameState, ui_mode::UiMode};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct AppConfig {
@@ -82,21 +82,21 @@ impl UIConfig {
 }
 
 #[derive(Clone, Debug, Default, Deref, DerefMut)]
-pub struct KeyBindings(pub HashMap<GameState, HashMap<Vec<KeyEvent>, Action>>);
+pub struct KeyBindings(pub HashMap<GameState, HashMap<Vec<KeyEvent>, GameEvent>>);
 
 impl<'de> Deserialize<'de> for KeyBindings {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let parsed_map = HashMap::<GameState, HashMap<String, Action>>::deserialize(deserializer)?;
+        let parsed_map = HashMap::<GameState, HashMap<String, GameEvent>>::deserialize(deserializer)?;
 
         let keybindings = parsed_map
             .into_iter()
             .map(|(mode, inner_map)| {
                 let converted_inner_map = inner_map
                     .into_iter()
-                    .map(|(key_str, action)| (parse_key_sequence(&key_str).unwrap(), action))
+                    .map(|(key_str, event)| (parse_key_sequence(&key_str).unwrap(), event))
                     .collect();
                 (mode, converted_inner_map)
             })

@@ -1,5 +1,5 @@
 use bevy::dev_tools::states::*;
-use bevy::log::{self, *};
+use bevy::log::*;
 use bevy::{app::ScheduleRunnerPlugin, prelude::*, state::app::StatesPlugin};
 use bevy_ratatui::{RatatuiPlugins, event::KeyEvent, terminal::RatatuiContext};
 use clap::Parser;
@@ -8,13 +8,14 @@ use std::{
     env,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
+// use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 mod action;
 mod cli;
 mod component;
 mod config;
+mod gameevent;
 mod map;
 mod rng;
 mod system;
@@ -25,6 +26,7 @@ mod ui_mode;
 pub use action::*;
 use cli::CliArgs;
 pub use config::*;
+pub use gameevent::GameEvent;
 pub use rng::*;
 pub use ui::*;
 pub use ui_component::*;
@@ -103,12 +105,15 @@ fn main() {
         .init_resource::<UIConfig>()
         .init_resource::<UIComponents>()
         .insert_resource(seed)
+        // Events
+        .add_event::<GameEvent>()
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
         .add_systems(Startup, enter_main_menu)
         // Update schedule
         .add_systems(PreUpdate, keyboard_input_system)
         .add_systems(Update, draw_ui_system)
+        .add_systems(Update, game_event_handler)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         // State transition schedules
@@ -140,9 +145,16 @@ fn setup_logging() {
     info!("{} {} starting", env!("CARGO_PKG_NAME"), VERSION_STRING);
 }
 
+fn game_event_handler(mut game_events: EventReader<GameEvent>) {
+    for event in game_events.read() {
+        info!("Received: {:?}", event);
+    }
+}
+
 fn keyboard_input_system(
     mut events: EventReader<KeyEvent>,
     // mut app_exit: EventWriter<AppExit>,
+    mut game_events: EventWriter<GameEvent>,
     uiconfig: Res<UIConfig>,
     state: Res<State<GameState>>,
 ) {
@@ -150,8 +162,9 @@ fn keyboard_input_system(
         debug!("key event received: {event:?}");
         if let Some(keymap) = uiconfig.keybindings.get(&state) {
             // debug!("keymap found: {keymap:?}");
-            if let Some(action) = keymap.get(&vec![crossterm::event::KeyEvent::new(event.code, event.modifiers)]) {
-                debug!("Key pressed for action: {action:?}");
+            if let Some(ge) = keymap.get(&vec![crossterm::event::KeyEvent::new(event.code, event.modifiers)]) {
+                debug!("Key pressed for action/gameevent: {ge:?}");
+                game_events.write(ge.clone());
                 //     // action_tx.send(action.clone())?;
                 // } else {
                 //     // If the key was not handled as a single key action, then consider it for multi-key combinations

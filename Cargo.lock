@@ -3620,6 +3620,7 @@ dependencies = [
  "grid 0.16.2",
  "json5",
  "lazy_static",
+ "log",
  "ratatui",
  "ron 0.10.1",
  "serde",

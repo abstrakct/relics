@@ -17,6 +17,7 @@ flexi_logger = "0.30"
 grid = { version = "0.16.2", features = ["serde"] }
 json5 = "0.4"
 lazy_static = "1.4"
+log = "0.4"
 ratatui = { version = "0.29", features = ["serde", "macros"] }
 ron = "0.10"
 serde = { version = "1", features = ["derive"] }
