@@ -3,8 +3,8 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct PlayerConfig {
     pub name: String,
-    pub hp: u32,
-    pub mp: u32,
+    pub hp: i32,
+    pub mp: i32,
     pub str: String,
     pub con: String,
     pub int: String,

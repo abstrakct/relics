@@ -8,7 +8,7 @@ pub struct PlayerBundle {
     stats: Stats,
     render: Render,
     attributes: Attributes,
-    // Add more components here as needed
+    position: Position, // Add more components here as needed
 }
 
 impl Default for PlayerBundle {
@@ -36,8 +36,8 @@ impl PlayerBundle {
                 full: cfg.config.player.name.clone(),
             },
             stats: Stats {
-                hp: Pool::new(10),
-                mp: Pool::new(1),
+                hp: Pool::new(cfg.config.player.hp),
+                mp: Pool::new(cfg.config.player.mp),
                 xp: 0,
                 pv: 0,
                 dv: 0,
@@ -72,6 +72,7 @@ impl PlayerBundle {
                     bonus: 0,
                 },
             },
+            position: Position { x: 1, y: 1, map: 1 },
         }
     }
 }
