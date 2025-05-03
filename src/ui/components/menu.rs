@@ -3,7 +3,7 @@
 // use std::{collections::HashMap, time::Duration};
 use anyhow::Result;
 use ratatui::{prelude::*, widgets::*};
-use tokio::sync::mpsc::UnboundedSender;
+// use tokio::sync::mpsc::UnboundedSender;
 
 use crate::UIComponent;
 use crate::game_event::GameEvent;
@@ -11,7 +11,7 @@ use crate::ui::centered_rect;
 
 #[derive(Default)]
 pub struct Menu {
-    command_tx: Option<UnboundedSender<GameEvent>>,
+    // command_tx: Option<UnboundedSender<GameEvent>>,
     // config: UIConfig, // this isn't used anywhere...
     items: Vec<(String, Option<GameEvent>)>,
     state: ListState,
@@ -51,10 +51,10 @@ impl Menu {
 }
 
 impl UIComponent for Menu {
-    fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
-        self.command_tx = Some(tx);
-        Ok(())
-    }
+    // fn register_action_handler(&mut self, tx: UnboundedSender<GameEvent>) -> Result<()> {
+    //     self.command_tx = Some(tx);
+    //     Ok(())
+    // }
 
     // fn register_config_handler(&mut self, config: UIConfig) -> Result<()> {
     //     self.config = config;
