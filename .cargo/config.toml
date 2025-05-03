@@ -3,3 +3,7 @@ b = "build"
 c = "check"
 t = "test -- --test-threads=1"
 r = "run"
+
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
