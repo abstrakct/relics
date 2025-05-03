@@ -1,3 +1,4 @@
+/*
 use anyhow::Result;
 use bevy_ecs::{resource::Resource, world::World};
 use crossterm::event::KeyEvent;
@@ -11,17 +12,15 @@ pub use crate::{
     ui::{self, UIComponentData},
 };
 use crate::{map::Maps, tui, ui_mode::UiMode};
+*/
+use bevy_ecs::resource::Resource;
 
-// todo: consider moving to a file like resources.rs
-#[derive(Resource, Default)]
-pub struct Seed(pub u64);
-
-// TODO: rename?
 #[derive(Resource)]
-pub struct GameData {
+pub struct CurrentGameData {
     pub current_map: usize,
 }
 
+/*
 pub struct Game {
     pub world: World,
     pub tick_rate: f64,
@@ -231,3 +230,5 @@ impl Game {
         log::info!("All necessary resources exist!");
     }
 }
+
+*/

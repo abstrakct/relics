@@ -13,6 +13,7 @@ use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitEx
 mod cli;
 mod component;
 mod config;
+mod game;
 mod game_event;
 mod map;
 mod rng;
@@ -20,6 +21,7 @@ mod system;
 mod ui;
 mod ui_component;
 mod ui_mode;
+mod worldgen;
 
 use cli::CliArgs;
 pub use config::*;
@@ -27,6 +29,7 @@ pub use game_event::*;
 pub use rng::*;
 pub use ui::*;
 pub use ui_component::*;
+use worldgen::generate_world;
 
 #[macro_use]
 extern crate lazy_static;
@@ -46,6 +49,7 @@ pub enum GameState {
     #[default]
     ApplicationStart,
     Menu,
+    WorldGen,
     InGame,
 }
 
@@ -54,7 +58,6 @@ pub enum GameState {
 // #[states(scoped_entities)]
 pub enum MenuState {
     #[default]
-    None,
     MainMenu,
     SomeOtherMenu,
 }
@@ -135,6 +138,7 @@ fn main() {
         .add_systems(Update, log_transitions::<MenuState>)
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
+        .add_systems(OnEnter(GameState::WorldGen), generate_world)
         .run();
 }
 
@@ -142,6 +146,7 @@ fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     let mut events_to_send = Vec::new();
     for event in param_set.p0().read() {
@@ -152,6 +157,7 @@ fn game_event_handler(
             }
             GameEvent::GenerateWorld => {
                 debug!("Generating world...");
+                next_state.set(GameState::WorldGen);
             }
             _ => {}
         }

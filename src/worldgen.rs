@@ -1,9 +1,9 @@
 use crate::{
-    CFG, GameData,
-    game::Game,
+    CFG, GameEvent, GameState,
+    game::CurrentGameData,
     map::{Map, Maps, generate_builder_chain},
 };
-// use bevy_ecs::prelude::*;
+use bevy::prelude::*;
 
 fn generate_maps(first: usize, last: usize) -> Maps {
     let mut maps = Maps::new();
@@ -24,7 +24,7 @@ fn generate_maps(first: usize, last: usize) -> Maps {
     maps
 }
 
-pub fn generate_world(game: &mut Game) {
+pub fn generate_world(world: &mut World) {
     log::info!("Starting world generation");
 
     let cfg = CFG.lock().unwrap();
@@ -33,17 +33,22 @@ pub fn generate_world(game: &mut Game) {
     std::mem::drop(cfg);
 
     log::info!("Deleting any existing maps");
-    game.world.remove_resource::<Maps>();
+    world.remove_resource::<Maps>();
 
     log::info!("Deleting any existing entities");
-    game.world.clear_entities();
+    world.clear_entities();
 
     log::info!("Generating maps");
     let maps = generate_maps(first_map, last_map);
 
-    let gamedata = GameData { current_map: first_map };
+    let gamestate = CurrentGameData { current_map: first_map };
 
     log::info!("Inserting resources");
-    game.world.insert_resource(maps);
-    game.world.insert_resource(gamedata);
+    world.insert_resource(maps);
+    world.insert_resource(gamestate);
+
+    let mut game_state = world.resource_mut::<NextState<GameState>>();
+    game_state.set(GameState::Menu); // will use default MenuState which is MainMenu
+
+    world.send_event(GameEvent::NextMenuItem);
 }
