@@ -210,6 +210,14 @@ fn show_main_menu(mut uicomps: ResMut<UIComponents>) {
     c.visible = true;
 }
 
+fn hide_main_menu(mut uicomps: ResMut<UIComponents>) {
+    let c = uicomps
+        .comps
+        .get_mut("main_menu")
+        .unwrap_or_else(|| panic!("Couldn't find main_menu UI component."));
+    c.visible = false;
+}
+
 fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UIComponents>) {
     info!("Setting up UI components...");
 
