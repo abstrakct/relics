@@ -1,7 +1,11 @@
 use bevy::log::{debug, info};
 
 use super::{BuilderMap, MetaMapBuilder};
-use crate::map::{FLOOR_TILE, MapRect};
+use crate::{
+    map::{FLOOR_TILE, MapRect},
+    rng,
+    utils::distance2d_pythagoras,
+};
 
 /// Meta map builder which translates rooms to tiles.
 pub struct RoomDrawer;
@@ -22,6 +26,17 @@ impl RoomDrawer {
             for x in room.x1..=room.x2 {
                 build_data.map.define_tile(x, y, FLOOR_TILE);
             }
+        }
+    }
+
+    fn circle(&mut self, build_data: &mut BuilderMap, room: &MapRect) {
+        let radius = i32::min(room.x2 - room.x1, room.y2 - room.y1) as f32 / 2.0;
+        let center = room.center();
+        for y in room.y1..=room.y2 {
+            for x in room.x1..=room.x2 {
+                let distance = distance2d_pythagoras(center, (x, y));
+                if distance <= radius {
+                    build_data.map.define_tile(x, y, FLOOR_TILE);
                 }
             }
         }
@@ -40,7 +55,11 @@ impl RoomDrawer {
 
         for room in rooms.iter() {
             info!("building room in rectangle shape: {:?}", room);
-            self.rectangle(build_data, room);
+            let shape = rng::roll_str("1d3");
+            match shape {
+                1 => self.circle(build_data, room),
+                _ => self.rectangle(build_data, room),
+            }
         }
     }
 }
