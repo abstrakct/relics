@@ -1,5 +1,6 @@
 use crate::{
     CFG, GameEvent, GameState,
+    component::Position,
     game::CurrentGameData,
     map::{Map, Maps, generate_builder_chain},
     player, utils,
@@ -7,8 +8,9 @@ use crate::{
 use bevy::log::*;
 use bevy::prelude::*;
 
-fn generate_maps(first: usize, last: usize) -> Maps {
+fn generate_maps(first: usize, last: usize) -> (Maps, Position) {
     let mut maps = Maps::new();
+    let mut dungeon_entry = Position::default();
 
     // Add an empty map at index 0
     maps.map.push(Map::new(0, "Zero", 1, 1));
@@ -20,10 +22,15 @@ fn generate_maps(first: usize, last: usize) -> Maps {
         let mut builder = generate_builder_chain(i, &name, 80, 50);
         builder.build_map();
 
+        if let Some(p) = builder.get_dungeon_entry() {
+            debug!("Found dungeon entry in map {} at {},{}", p.map, p.x, p.y);
+            dungeon_entry = p;
+        }
+
         maps.map.push(builder.get_map());
     }
 
-    maps
+    (maps, dungeon_entry)
 }
 
 pub fn generate_world(world: &mut World) {
@@ -41,13 +48,16 @@ pub fn generate_world(world: &mut World) {
     world.clear_entities();
 
     info!("Generating maps");
-    let maps = generate_maps(first_map, last_map);
+    let (maps, dungeon_entry) = generate_maps(first_map, last_map);
 
-    let gamestate = CurrentGameData { current_map: first_map };
+    let gamedata = CurrentGameData {
+        current_map: first_map,
+        player_pos: dungeon_entry,
+    };
 
     info!("Inserting resources");
     world.insert_resource(maps);
-    world.insert_resource(gamestate);
+    world.insert_resource(gamedata);
 
     info!("Spawning player entity");
     let player = player::spawn(world);

@@ -4,7 +4,7 @@ use meta::dungeon_entry_room_based::DungeonEntryRoomBased;
 mod initial;
 mod meta;
 
-use super::{Map, MapRect};
+use super::{Map, MapRect, TileType};
 use crate::{component::Position, rng};
 use initial::{empty_map::EmptyMapBuilder, rooms::RoomsBuilder};
 use meta::{borders::Borders, reveal_all::RevealAll, room_drawer::RoomDrawer, room_sorter::*};
@@ -84,6 +84,20 @@ impl BuilderChain {
 
     pub fn get_map(&mut self) -> Map {
         self.build_data.map.clone()
+    }
+
+    pub fn get_dungeon_entry(&self) -> Option<Position> {
+        for ((y, x), tile) in self.build_data.map.tiles.indexed_iter() {
+            if tile.tile_type == TileType::DungeonEntry {
+                return Some(Position {
+                    x,
+                    y,
+                    map: self.build_data.map.id as usize,
+                });
+            }
+        }
+
+        None
     }
 }
 

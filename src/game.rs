@@ -15,9 +15,12 @@ use crate::{map::Maps, tui, ui_mode::UiMode};
 */
 use bevy_ecs::resource::Resource;
 
+use crate::component::Position;
+
 #[derive(Resource)]
 pub struct CurrentGameData {
     pub current_map: usize,
+    pub player_pos: Position,
 }
 
 /*
