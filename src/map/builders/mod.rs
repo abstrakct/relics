@@ -121,7 +121,10 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
         builder.add(DungeonEntryRoomBased::new());
     }
 
-    builder.add(RevealAll::new());
+    #[cfg(debug_assertions)]
+    {
+        builder.add(RevealAll::new());
+    }
 }
 
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {

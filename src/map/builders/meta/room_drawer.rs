@@ -21,9 +21,7 @@ impl RoomDrawer {
         for y in room.y1..=room.y2 {
             for x in room.x1..=room.x2 {
                 build_data.map.define_tile(x, y, FLOOR_TILE);
-                #[cfg(debug_assertions)]
-                {
-                    build_data.map.set_revealed(x, y, true);
+            }
                 }
             }
         }
