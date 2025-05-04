@@ -7,9 +7,7 @@ mod meta;
 use super::{Map, MapRect};
 use crate::{component::Position, rng};
 use initial::{empty_map::EmptyMapBuilder, rooms::RoomsBuilder};
-use meta::borders::Borders;
-use meta::reveal_all::RevealAll;
-use meta::room_drawer::RoomDrawer;
+use meta::{borders::Borders, reveal_all::RevealAll, room_drawer::RoomDrawer, room_sorter::*};
 
 pub struct BuilderMap {
     pub map: Map,
@@ -99,10 +97,25 @@ fn empty_map_builder(builder: &mut BuilderChain) {
 }
 
 fn random_rooms_builder(builder: &mut BuilderChain) {
-    builder
-        .start_with(RoomsBuilder::new())
-        .add(RoomDrawer::new())
-        .add(Borders::new());
+    builder.start_with(RoomsBuilder::new());
+
+    let sort = rng::roll_str("1d4");
+    match sort {
+        1 => {
+            builder.add(RoomSorter::new(RoomSort::Leftmost));
+        }
+        2 => {
+            builder.add(RoomSorter::new(RoomSort::Rightmost));
+        }
+        3 => {
+            builder.add(RoomSorter::new(RoomSort::Topmost));
+        }
+        _ => {
+            builder.add(RoomSorter::new(RoomSort::Bottommost));
+        }
+    }
+
+    builder.add(RoomDrawer::new()).add(Borders::new());
 
     if builder.build_data.map.id == 0 {
         builder.add(DungeonEntryRoomBased::new());
