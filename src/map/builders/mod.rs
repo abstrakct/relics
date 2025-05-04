@@ -105,12 +105,21 @@ fn empty_map_builder(builder: &mut BuilderChain) {
     builder
         .start_with(EmptyMapBuilder::new())
         .add(RoomDrawer::new())
-        .add(Borders::new())
-        .add(DungeonEntryRoomBased::new())
-        .add(RevealAll::new());
+        .add(Borders::new());
+
+    if builder.build_data.map.id == 1 {
+        builder.add(DungeonEntryRoomBased::new());
+    }
+
+    #[cfg(debug_assertions)]
+    {
+        builder.add(RevealAll::new());
+    }
 }
 
 fn random_rooms_builder(builder: &mut BuilderChain) {
+    debug!("in random_rooms_builder - map id: {}", builder.build_data.map.id);
+
     builder.start_with(RoomsBuilder::new());
 
     let sort = rng::roll_str("1d4");
@@ -131,7 +140,7 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
 
     builder.add(RoomDrawer::new()).add(Borders::new());
 
-    if builder.build_data.map.id == 0 {
+    if builder.build_data.map.id == 1 {
         builder.add(DungeonEntryRoomBased::new());
     }
 
@@ -144,6 +153,9 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
     let mut builder = BuilderChain::new(width, height);
 
+    builder.build_data.map.id = map_id as i32;
+    builder.build_data.map.name = map_name.into();
+
     let map_type = rng::roll_str("1d2");
     match map_type {
         1 => {
@@ -154,12 +166,10 @@ pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize
         }
     }
 
-    builder.build_data.map.id = map_id as i32;
-    builder.build_data.map.name = map_name.into();
     builder
 }
 
 pub fn generate_builder_chain(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
-    info!("Building map: {map_name} using random_builder");
+    info!("Building map {map_id}: {map_name} using random_builder");
     random_builder(map_id, map_name, width, height)
 }
