@@ -102,9 +102,13 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
     builder
         .start_with(RoomsBuilder::new())
         .add(RoomDrawer::new())
-        .add(Borders::new())
-        .add(DungeonEntryRoomBased::new())
-        .add(RevealAll::new());
+        .add(Borders::new());
+
+    if builder.build_data.map.id == 0 {
+        builder.add(DungeonEntryRoomBased::new());
+    }
+
+    builder.add(RevealAll::new());
 }
 
 pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
