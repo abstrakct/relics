@@ -17,7 +17,8 @@ use bevy_ecs::resource::Resource;
 
 use crate::component::Position;
 
-#[derive(Resource)]
+// TODO: this could potentially be stored as an Entity
+#[derive(Resource, Default)]
 pub struct CurrentGameData {
     pub current_map: usize,
     pub player_pos: Position,

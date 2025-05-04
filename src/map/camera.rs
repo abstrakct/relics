@@ -1,3 +1,4 @@
+use bevy::log::debug_once;
 use grid::Grid;
 use ratatui::layout::Position as RatatuiPosition;
 use ratatui::{buffer::Buffer, layout::Rect, prelude::Color, widgets::Widget};
@@ -27,6 +28,7 @@ impl Camera {
 
 impl Widget for Camera {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        debug_once!("Rendering map on screen area: {:?}", area);
         let rendered_map = render_map(&self.player_pos, self.map, area);
         // log::debug!("{:?}", rendered_map);
         for ((y, x), _) in rendered_map.indexed_iter() {

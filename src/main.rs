@@ -147,6 +147,7 @@ fn main() {
         .add_systems(Update, log_positions)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
+        .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame)))
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
         .add_systems(OnExit(MenuState::MainMenu), hide_main_menu)
@@ -334,4 +335,8 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
             visible: false,
         },
     );
+}
+
+fn update_map(cgd: Res<CurrentGameData>) {
+    //
 }

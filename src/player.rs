@@ -1,4 +1,4 @@
-use crate::{component::*, rng};
+use crate::{component::*, game::CurrentGameData, rng};
 use bevy::prelude::*;
 
 #[derive(Bundle)]
@@ -13,12 +13,17 @@ pub struct PlayerBundle {
 
 impl Default for PlayerBundle {
     fn default() -> Self {
-        Self::new()
+        Self::new(Position::default())
     }
 }
 
 impl PlayerBundle {
-    pub fn new() -> Self {
+    pub fn new(pos: Position) -> Self {
+        debug!(
+            "Generating new PlayerBundle. Position is {},{} in map {}",
+            pos.x, pos.y, pos.map
+        );
+
         let cfg = &super::CFG.lock().unwrap();
         let str_roll = rng::roll_str(cfg.config.player.str.clone());
         info!("Roll for str: {str_roll}");
@@ -72,11 +77,12 @@ impl PlayerBundle {
                     bonus: 0,
                 },
             },
-            position: Position { x: 1, y: 1, map: 1 },
+            position: pos,
         }
     }
 }
 
 pub fn spawn(world: &mut World) -> Entity {
-    world.spawn(PlayerBundle::new()).id()
+    let cgd = world.get_resource::<CurrentGameData>().unwrap();
+    world.spawn(PlayerBundle::new(cgd.player_pos)).id()
 }
