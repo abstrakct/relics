@@ -1,4 +1,4 @@
-use bevy::log::{debug, info};
+use bevy::log::debug;
 
 use super::{BuilderMap, MetaMapBuilder};
 use crate::{
@@ -22,6 +22,7 @@ impl RoomDrawer {
     }
 
     fn rectangle(&mut self, build_data: &mut BuilderMap, room: &MapRect) {
+        debug!("building room in rectangle shape: {:?}", room);
         for y in room.y1..=room.y2 {
             for x in room.x1..=room.x2 {
                 build_data.map.define_tile(x, y, FLOOR_TILE);
@@ -32,10 +33,13 @@ impl RoomDrawer {
     fn circle(&mut self, build_data: &mut BuilderMap, room: &MapRect) {
         let radius = i32::min(room.x2 - room.x1, room.y2 - room.y1) as f32 / 2.0;
         let center = room.center();
+        debug!("Drawing room in circle shape, with radius {radius}");
         for y in room.y1..=room.y2 {
             for x in room.x1..=room.x2 {
                 let distance = distance2d_pythagoras(center, (x, y));
+                // debug!("{x}, {y}: distance {distance}");
                 if distance <= radius {
+                    // debug!("within circle");
                     build_data.map.define_tile(x, y, FLOOR_TILE);
                 }
             }
@@ -54,7 +58,6 @@ impl RoomDrawer {
         }
 
         for room in rooms.iter() {
-            info!("building room in rectangle shape: {:?}", room);
             let shape = rng::roll_str("1d3");
             match shape {
                 1 => self.circle(build_data, room),
