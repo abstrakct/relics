@@ -147,7 +147,7 @@ fn main() {
         .add_systems(Update, log_positions)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
-        .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame)))
+        .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame))) // TODO: only run on some Map Update event?
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
         .add_systems(OnExit(MenuState::MainMenu), hide_main_menu)
@@ -280,12 +280,12 @@ fn setup_new_game(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     // Update GameUi with current map
-    let mut hud = ui::components::GameUi::new();
-    hud.set_map(maps.map[cgd.current_map].clone());
+    let mut game_ui = ui::components::GameUi::new();
+    game_ui.set_map(maps.map[cgd.current_map].clone());
     uicomps.comps.insert(
         GAME_UI_NAME.to_string(),
         UIComponentData {
-            component: Box::new(hud) as Box<dyn UIComponent>,
+            component: Box::new(game_ui) as Box<dyn UIComponent>,
             visible: true,
         },
     );
@@ -337,6 +337,40 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
     );
 }
 
-fn update_map(cgd: Res<CurrentGameData>) {
-    //
+fn update_map(
+    cgd: Res<CurrentGameData>,
+    maps: Res<Maps>,
+    mut uicomps: ResMut<UIComponents>,
+    query: Query<(&Position, &Render)>,
+) {
+    let mut result: Vec<(Position, Render)> = Vec::new();
+
+    // Find renderable entities on current map
+    for (position, render) in query {
+        debug_once!(
+            "Found renderable entity at {},{} in map {}",
+            position.x,
+            position.y,
+            position.map
+        );
+        if position.map == cgd.current_map as i32 {
+            result.push((*position, *render));
+        }
+    }
+
+    // Sort by rendering order
+    result.sort_by(|a, b| b.1.order.cmp(&a.1.order));
+
+    // Update Game UI
+    let mut game_ui = ui::components::GameUi::new();
+    game_ui.set_map(maps.map[cgd.current_map].clone());
+    game_ui.set_entities(result);
+    uicomps.comps.insert(
+        GAME_UI_NAME.to_string(),
+        UIComponentData {
+            component: Box::new(game_ui) as Box<dyn UIComponent>,
+            visible: true,
+        },
+    );
 }
+

@@ -4,16 +4,22 @@ use ratatui::layout::Position as RatatuiPosition;
 use ratatui::{buffer::Buffer, layout::Rect, prelude::Color, widgets::Widget};
 
 use super::Map;
-use crate::component::Position;
+use crate::component::{Position, Render};
 
 pub struct Camera {
+    /// player_pos: currently not in use!
     player_pos: Position,
     map: Map,
+    entities: Vec<(Position, Render)>,
 }
 
 impl Camera {
-    pub fn new(player_pos: Position, map: Map /*entities: Vec<(Position, Renderable)>*/) -> Self {
-        Self { player_pos, map }
+    pub fn new(player_pos: Position, map: Map, entities: Vec<(Position, Render)>) -> Self {
+        Self {
+            player_pos,
+            map,
+            entities,
+        }
     }
 
     pub fn set_map(&mut self, map: Map) {
@@ -29,7 +35,7 @@ impl Camera {
 impl Widget for Camera {
     fn render(self, area: Rect, buf: &mut Buffer) {
         debug_once!("Rendering map on screen area: {:?}", area);
-        let rendered_map = render_map(&self.player_pos, self.map, area);
+        let rendered_map = render_map(&self.player_pos, self.map, area, self.entities);
         // log::debug!("{:?}", rendered_map);
         for ((y, x), _) in rendered_map.indexed_iter() {
             buf[RatatuiPosition {
@@ -60,7 +66,7 @@ impl Default for RenderedTile {
     }
 }
 
-pub fn render_map(player_pos: &Position, map: Map, area: Rect) -> Grid<RenderedTile> {
+pub fn render_map(player_pos: &Position, map: Map, area: Rect, entities: Vec<(Position, Render)>) -> Grid<RenderedTile> {
     let mut rendered_map = Grid::init(map.height, map.width, RenderedTile::default());
 
     for ((y, x), tile) in map.tiles.indexed_iter() {
@@ -73,6 +79,14 @@ pub fn render_map(player_pos: &Position, map: Map, area: Rect) -> Grid<RenderedT
                 bg,
             };
         }
+    }
+
+    for (pos, render) in entities {
+        rendered_map[(pos.y as usize, pos.x as usize)] = RenderedTile {
+            glyph: render.glyph,
+            fg: render.fg,
+            bg: render.bg,
+        };
     }
 
     rendered_map

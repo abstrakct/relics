@@ -2,7 +2,7 @@
 // use serde::{Deserialize, Serialize};
 // use std::{collections::HashMap, time::Duration};
 use anyhow::Result;
-use bevy::log::debug;
+use bevy::log::{debug, debug_once};
 use ratatui::prelude::*;
 // use tokio::sync::mpsc::UnboundedSender;
 
@@ -32,7 +32,7 @@ impl GameUi {
     }
 
     pub fn set_map(&mut self, map: Map) -> &mut Self {
-        debug!("set_map: name: {} / width: {} / height: {} ", map.name, map.width, map.height);
+        debug_once!("set_map: name: {} / width: {} / height: {} ", map.name, map.width, map.height);
         self.map = map;
         self
     }
@@ -74,7 +74,7 @@ impl UIComponent for GameUi {
             .constraints([Constraint::Percentage(67), Constraint::Percentage(33)])
             .split(horizontal_layout[0]);
 
-        let camera = Camera::new(self.player_pos, self.map.clone() /*self.entities.clone()*/);
+        let camera = Camera::new(self.player_pos, self.map.clone(), self.entities.clone());
         // log::debug!("Drawing UIMap");
 
         f.render_widget(camera, layout[0]);
