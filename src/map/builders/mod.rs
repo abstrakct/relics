@@ -90,9 +90,9 @@ impl BuilderChain {
         for ((y, x), tile) in self.build_data.map.tiles.indexed_iter() {
             if tile.tile_type == TileType::DungeonEntry {
                 return Some(Position {
-                    x,
-                    y,
-                    map: self.build_data.map.id as usize,
+                    x: x.try_into().unwrap(),
+                    y: y.try_into().unwrap(),
+                    map: self.build_data.map.id,
                 });
             }
         }

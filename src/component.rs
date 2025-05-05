@@ -134,12 +134,12 @@ pub struct Player;
 
 #[derive(Component, Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct Position {
-    pub x: usize,
-    pub y: usize,
-    pub map: usize,
+    pub x: i32,
+    pub y: i32,
+    pub map: i32,
 }
 
-#[derive(Component, Default, Serialize, Deserialize)]
+#[derive(Component, Clone, Copy, Default, Serialize, Deserialize)]
 pub struct Render {
     pub glyph: char,
     pub fg: Color,

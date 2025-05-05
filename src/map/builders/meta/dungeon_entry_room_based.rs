@@ -20,9 +20,9 @@ impl DungeonEntryRoomBased {
         if let Some(rooms) = &build_data.rooms {
             let start_pos = rooms[0].center();
             build_data.entry = Some(Position {
-                x: start_pos.0 as usize,
-                y: start_pos.1 as usize,
-                map: build_data.map.id as usize,
+                x: start_pos.0,
+                y: start_pos.1,
+                map: build_data.map.id,
             });
             // let upstairs_idx = build_data.map.idx(start_pos.0, start_pos.1);
             build_data.map.define_tile(start_pos.0, start_pos.1, DUNGEON_ENTRY_TILE);
