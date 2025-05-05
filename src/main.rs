@@ -16,6 +16,7 @@ use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitEx
 mod cli;
 mod component;
 mod config;
+mod event;
 mod game;
 mod game_event;
 mod map;
@@ -28,7 +29,9 @@ mod utils;
 mod worldgen;
 
 use cli::CliArgs;
+pub use component::*;
 pub use config::*;
+use event::*;
 use game::CurrentGameData;
 pub use game_event::*;
 use map::Maps;
@@ -137,14 +140,16 @@ fn main() {
         .insert_resource(seed)
         // Events
         .add_event::<GameEvent>()
+        .add_event::<PlayerMoveEvent>()
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
         .add_systems(Startup, enter_main_menu)
         // Update schedule
         .add_systems(PreUpdate, keyboard_input_system)
+        .add_systems(PreUpdate, log_positions)
         .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
-        .add_systems(Update, log_positions)
+        .add_systems(Update, player_move_system)
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame))) // TODO: only run on some Map Update event?
@@ -172,6 +177,7 @@ fn log_positions(query: Query<(Entity, &Position)>) {
 
 fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
+    mut player_move: EventWriter<PlayerMoveEvent>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
     mut next_state: ResMut<NextState<GameState>>,
@@ -191,6 +197,9 @@ fn game_event_handler(
             }
             GameEvent::ShowMainMenu => {
                 next_state.set(GameState::Menu);
+            }
+            GameEvent::PlayerMove { x, y } => {
+                player_move.write(PlayerMoveEvent { x: *x, y: *y });
             }
             _ => {}
         }
@@ -374,3 +383,11 @@ fn update_map(
     );
 }
 
+fn player_move_system(mut player_move: EventReader<PlayerMoveEvent>, mut query: Query<(&Player, &mut Position)>) {
+    for pm in player_move.read() {
+        if let Ok((_entity, mut pos)) = query.single_mut() {
+            pos.x += pm.x;
+            pos.y += pm.y;
+        }
+    }
+}
