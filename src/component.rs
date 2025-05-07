@@ -128,15 +128,19 @@ pub struct Attribute {
 #[require(Position, Render, Name, DetailedName, Stats, Attributes)]
 pub struct Player;
 
+/// Indicates that an entity is a sentient being.
 #[derive(Component, Default, Serialize, Deserialize, Debug)]
 pub struct Sentient;
 
+/// Indicates that an entity has a physical body.
 #[derive(Component, Default, Serialize, Deserialize, Debug)]
 pub struct Corporeal;
 
+/// Indicates that an entity has a mind/consciousness.
 #[derive(Component, Default, Serialize, Deserialize, Debug)]
 pub struct Mental;
 
+/// Indicates that an entity has a soul/spirit.
 #[derive(Component, Default, Serialize, Deserialize, Debug)]
 pub struct Spiritual;
 
@@ -199,6 +203,16 @@ pub struct Attributes {
 pub enum Intent {
     MoveRelative { dx: i32, dy: i32 },
     MoveAbsolute { x: i32, y: i32 },
+}
+
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub struct Speed {
+    pub speed: f32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub struct Energy {
+    pub energy: i32,
 }
 
 #[cfg(test)]

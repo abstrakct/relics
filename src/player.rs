@@ -9,6 +9,8 @@ pub struct PlayerBundle {
     render: Render,
     attributes: Attributes,
     position: Position, // Add more components here as needed
+    speed: Speed,
+    // markers
     sentient: Sentient,
     corporeal: Corporeal,
     mental: Mental,
@@ -82,6 +84,8 @@ impl PlayerBundle {
                 },
             },
             position: pos,
+            speed: Speed { speed: 1.0 },
+            // Markers
             sentient: Sentient,
             corporeal: Corporeal,
             mental: Mental,
