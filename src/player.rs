@@ -1,4 +1,4 @@
-use crate::{component::*, game::CurrentGameData, rng};
+use crate::{component::*, rng};
 use bevy::prelude::*;
 
 #[derive(Bundle)]
@@ -9,6 +9,10 @@ pub struct PlayerBundle {
     render: Render,
     attributes: Attributes,
     position: Position, // Add more components here as needed
+    sentient: Sentient,
+    corporeal: Corporeal,
+    mental: Mental,
+    spirit: Spiritual,
 }
 
 impl Default for PlayerBundle {
@@ -78,11 +82,14 @@ impl PlayerBundle {
                 },
             },
             position: pos,
+            sentient: Sentient,
+            corporeal: Corporeal,
+            mental: Mental,
+            spirit: Spiritual,
         }
     }
 }
 
 pub fn spawn(world: &mut World, pos: Position) -> Entity {
-    let cgd = world.get_resource::<CurrentGameData>().unwrap();
     world.spawn(PlayerBundle::new(pos)).id()
 }
