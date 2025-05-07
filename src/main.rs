@@ -188,6 +188,7 @@ fn main() {
 //     }
 // }
 
+/// Handle events of type GameEvent (the generic event in the application)
 fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
     mut intent_queue: EventWriter<IntentEvent>,
@@ -455,12 +456,15 @@ fn player_move_system(mut player_move: EventReader<PlayerMoveRelativeEvent>, mut
     }
 }
 
+/// Update player position in CurrentGameData resource
 fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player, &Position)>) {
     if let Ok((_player, pos)) = query.single() {
         cgd.player_pos = *pos;
     }
 }
 
+/// System which removes all components of type T from all entities that have them.
+/// Used to clean up temporary components like Intent at the start of each frame.
 fn cleanup_component_system<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
     for e in q.iter() {
         commands.entity(e).remove::<T>();
