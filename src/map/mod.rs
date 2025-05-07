@@ -111,8 +111,8 @@ impl Map {
     }
 
     #[inline]
-    pub fn is_walkable(&self, x: usize, y: usize) -> bool {
-        self.tiles[(y, x)].tile_walkable
+    pub fn is_walkable(&self, x: i32, y: i32) -> bool {
+        self.tiles[(y as usize, x as usize)].tile_walkable
     }
 
     #[inline]

@@ -77,6 +77,12 @@ pub enum MenuState {
     SomeOtherMenu,
 }
 
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+enum GameplaySet {
+    Player,
+    NonPlayer,
+}
+
 fn main() {
     ////// Start logger
     let timestamp = chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string();
@@ -148,10 +154,15 @@ fn main() {
         .add_systems(Startup, enter_main_menu)
         // Update schedule
         .add_systems(PreUpdate, keyboard_input_system)
-        .add_systems(PreUpdate, log_positions)
+        .add_systems(PreUpdate, update_player_pos)
+        // .add_systems(PreUpdate, log_positions)
         .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
-        .add_systems(Update, player_move_system)
+        .add_systems(
+            Update,
+            (intent_event_handler, intent_system.after(intent_event_handler)).run_if(in_state(GameState::InGame)),
+        )
+        .add_systems(Update, (player_move_system).in_set(GameplaySet::Player))
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame))) // TODO: only run on some Map Update event?
@@ -165,17 +176,17 @@ fn main() {
         .run();
 }
 
-fn log_positions(query: Query<(Entity, &Position)>) {
-    for (entity, position) in &query {
-        info_once!(
-            "Entity {} is at position: x {}, y {}, map {}",
-            entity,
-            position.x,
-            position.y,
-            position.map
-        );
-    }
-}
+// fn log_positions(query: Query<(Entity, &Position)>) {
+//     for (entity, position) in &query {
+//         info_once!(
+//             "Entity {} is at position: x {}, y {}, map {}",
+//             entity,
+//             position.x,
+//             position.y,
+//             position.map
+//         );
+//     }
+// }
 
 fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
@@ -202,11 +213,7 @@ fn game_event_handler(
                 next_state.set(GameState::Menu);
             }
             GameEvent::PlayerMove { x, y } => {
-                intent_queue.write(IntentEvent::MoveRelative {
-                    entity: cgd.player.unwrap(),
-                    dx: *x,
-                    dy: *y,
-                });
+                intent_queue.write(IntentEvent::PlayerMoveRelative { dx: *x, dy: *y });
             }
             _ => {}
         }
@@ -222,6 +229,39 @@ fn game_event_handler(
 
     for event in events_to_send {
         param_set.p1().write(event);
+    }
+}
+
+fn intent_event_handler(
+    mut intent_queue: EventReader<IntentEvent>,
+    mut move_queue: EventWriter<PlayerMoveEvent>,
+    // mut move_query: Query<(Entity, &mut Position)>,
+    cgd: Res<CurrentGameData>,
+    maps: Res<Maps>,
+    mut commands: Commands,
+) {
+    for intent in intent_queue.read() {
+        #[allow(clippy::single_match)]
+        match intent {
+            IntentEvent::MoveRelative { entity, dx, dy } => {
+                debug!(
+                    "Entity {} wants to MoveRelative {},{} - adding Intent::MoveRelative component",
+                    entity, dx, dy
+                );
+                // if *entity == cgd.player.unwrap() {
+                //     debug!("Entity is player");
+                //     move_queue.write(PlayerMoveEvent { x: *dx, y: *dy });
+                // }
+                commands.entity(*entity).insert(Intent::MoveRelative { dx: *dx, dy: *dy });
+            }
+            IntentEvent::PlayerMoveRelative { dx, dy } => {
+                debug!("Player wants to MoveRelative {},{}", dx, dy);
+                commands
+                    .entity(cgd.player.unwrap())
+                    .insert(Intent::MoveRelative { dx: *dx, dy: *dy });
+            }
+            _ => {}
+        }
     }
 }
 
@@ -390,11 +430,28 @@ fn update_map(
     );
 }
 
+fn intent_system(cgd: Res<CurrentGameData>, query: Query<(Entity, &Intent)>) {
+    for (entity, intent) in query {
+        debug_once!("entity {} has intent {:?}", q.0, q.1);
+        if entity == cgd.player.unwrap() {
+            // if maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
+            //     todo!()
+            // }
+        }
+    }
+}
+
 fn player_move_system(mut player_move: EventReader<PlayerMoveEvent>, mut query: Query<(&Player, &mut Position)>) {
     for pm in player_move.read() {
         if let Ok((_entity, mut pos)) = query.single_mut() {
             pos.x += pm.x;
             pos.y += pm.y;
         }
+    }
+}
+
+fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player, &Position)>) {
+    if let Ok((_player, pos)) = query.single() {
+        cgd.player_pos = *pos;
     }
 }

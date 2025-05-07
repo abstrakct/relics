@@ -15,4 +15,5 @@ pub struct PlayerMoveEvent {
 pub enum IntentEvent {
     MoveRelative { entity: Entity, dx: i32, dy: i32 },
     MoveAbsolute { entity: Entity, x: i32, y: i32 },
+    PlayerMoveRelative { dx: i32, dy: i32 },
 }
