@@ -189,12 +189,14 @@ fn main() {
 // }
 
 /// Handle events of type GameEvent (the generic event in the application)
+/// Passes events on to UI components if appropriate
 fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
-    mut intent_queue: EventWriter<IntentEvent>,
+    // mut intent_queue: EventWriter<IntentEvent>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
     mut next_state: ResMut<NextState<GameState>>,
+    mut commands: Commands,
     cgd: Res<CurrentGameData>,
 ) {
     let mut events_to_send = Vec::new();
@@ -213,8 +215,11 @@ fn game_event_handler(
             GameEvent::ShowMainMenu => {
                 next_state.set(GameState::Menu);
             }
-            GameEvent::PlayerMove { x, y } => {
-                intent_queue.write(IntentEvent::PlayerMoveRelative { dx: *x, dy: *y });
+            GameEvent::PlayerMoveRelative { dx, dy } => {
+                // intent_queue.write(IntentEvent::PlayerMoveRelative { dx: *x, dy: *y });
+                commands
+                    .entity(cgd.player.unwrap())
+                    .insert(Intent::MoveRelative { dx: *dx, dy: *dy });
             }
             _ => {}
         }

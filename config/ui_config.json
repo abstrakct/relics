@@ -10,14 +10,14 @@
     },
     "InGame": {
       "<esc>": "ShowMainMenu",
-      "<j>": { "PlayerMove": { "x": 0, "y": 1 } },
-      "<k>": { "PlayerMove": { "x": 0, "y": -1 } },
-      "<h>": { "PlayerMove": { "x": -1, "y": 0 } },
-      "<l>": { "PlayerMove": { "x": 1, "y": 0 } },
-      "<y>": { "PlayerMove": { "x": -1, "y": -1 } },
-      "<u>": { "PlayerMove": { "x": 1, "y": -1 } },
-      "<b>": { "PlayerMove": { "x": -1, "y": 1 } },
-      "<n>": { "PlayerMove": { "x": 1, "y": 1 } },
+      "<j>": { "PlayerMoveRelative": { "dx": 0, "dy": 1 } },
+      "<k>": { "PlayerMoveRelative": { "dx": 0, "dy": -1 } },
+      "<h>": { "PlayerMoveRelative": { "dx": -1, "dy": 0 } },
+      "<l>": { "PlayerMoveRelative": { "dx": 1, "dy": 0 } },
+      "<y>": { "PlayerMoveRelative": { "dx": -1, "dy": -1 } },
+      "<u>": { "PlayerMoveRelative": { "dx": 1, "dy": -1 } },
+      "<b>": { "PlayerMoveRelative": { "dx": -1, "dy": 1 } },
+      "<n>": { "PlayerMoveRelative": { "dx": 1, "dy": 1 } },
       "<q>": "Quit"
     }
   }
