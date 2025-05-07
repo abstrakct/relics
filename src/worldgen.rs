@@ -50,18 +50,19 @@ pub fn generate_world(world: &mut World) {
     info!("Generating maps");
     let (maps, dungeon_entry) = generate_maps(first_map, last_map);
 
+    info!("Spawning player entity");
+    let player = player::spawn(world, dungeon_entry);
+    utils::print_entity_components(world, player);
+
     let gamedata = CurrentGameData {
         current_map: first_map,
+        player: Some(player),
         player_pos: dungeon_entry,
     };
 
     info!("Inserting resources");
     world.insert_resource(maps);
     world.insert_resource(gamedata);
-
-    info!("Spawning player entity");
-    let player = player::spawn(world);
-    utils::print_entity_components(world, player);
 
     // Change game state
     let mut game_state = world.resource_mut::<NextState<GameState>>();

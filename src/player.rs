@@ -82,7 +82,7 @@ impl PlayerBundle {
     }
 }
 
-pub fn spawn(world: &mut World) -> Entity {
+pub fn spawn(world: &mut World, pos: Position) -> Entity {
     let cgd = world.get_resource::<CurrentGameData>().unwrap();
-    world.spawn(PlayerBundle::new(cgd.player_pos)).id()
+    world.spawn(PlayerBundle::new(pos)).id()
 }

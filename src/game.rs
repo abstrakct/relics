@@ -13,7 +13,7 @@ pub use crate::{
 };
 use crate::{map::Maps, tui, ui_mode::UiMode};
 */
-use bevy_ecs::resource::Resource;
+use bevy_ecs::{entity::Entity, resource::Resource};
 
 use crate::component::Position;
 
@@ -21,6 +21,7 @@ use crate::component::Position;
 #[derive(Resource, Default)]
 pub struct CurrentGameData {
     pub current_map: usize,
+    pub player: Option<Entity>,
     pub player_pos: Position,
 }
 
