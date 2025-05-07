@@ -459,3 +459,9 @@ fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player, &P
         cgd.player_pos = *pos;
     }
 }
+
+fn cleanup_component_system<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
+    for e in q.iter() {
+        commands.entity(e).remove::<T>();
+    }
+}
