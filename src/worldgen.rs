@@ -58,10 +58,10 @@ pub fn generate_world(world: &mut World) {
         current_map: first_map,
         player: Some(player),
         player_pos: dungeon_entry,
+        maps,
     };
 
     info!("Inserting resources");
-    world.insert_resource(maps);
     world.insert_resource(gamedata);
 
     // Change game state

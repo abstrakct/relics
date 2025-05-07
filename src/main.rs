@@ -34,7 +34,6 @@ pub use config::*;
 use event::*;
 use game::CurrentGameData;
 pub use game_event::*;
-use map::Maps;
 pub use player::*;
 pub use rng::*;
 use system::ui_render::ui_render_system;
@@ -234,10 +233,9 @@ fn game_event_handler(
 
 fn intent_event_handler(
     mut intent_queue: EventReader<IntentEvent>,
-    mut move_queue: EventWriter<PlayerMoveEvent>,
+    // mut move_queue: EventWriter<PlayerMoveEvent>,
     // mut move_query: Query<(Entity, &mut Position)>,
     cgd: Res<CurrentGameData>,
-    maps: Res<Maps>,
     mut commands: Commands,
 ) {
     for intent in intent_queue.read() {
@@ -331,13 +329,12 @@ fn hide_game_ui(mut uicomps: ResMut<UIComponents>) {
 
 fn setup_new_game(
     cgd: Res<CurrentGameData>,
-    maps: Res<Maps>,
     mut uicomps: ResMut<UIComponents>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     // Update GameUi with current map
     let mut game_ui = ui::components::GameUi::new();
-    game_ui.set_map(maps.map[cgd.current_map].clone());
+    game_ui.set_map(cgd.maps.map[cgd.current_map].clone());
     uicomps.comps.insert(
         GAME_UI_NAME.to_string(),
         UIComponentData {
@@ -393,12 +390,7 @@ fn setup_ui_components(mut uiconfig: ResMut<UIConfig>, mut uicomps: ResMut<UICom
     );
 }
 
-fn update_map(
-    cgd: Res<CurrentGameData>,
-    maps: Res<Maps>,
-    mut uicomps: ResMut<UIComponents>,
-    query: Query<(&Position, &Render)>,
-) {
+fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, query: Query<(&Position, &Render)>) {
     let mut result: Vec<(Position, Render)> = Vec::new();
 
     // Find renderable entities on current map
@@ -419,7 +411,7 @@ fn update_map(
 
     // Update Game UI
     let mut game_ui = ui::components::GameUi::new();
-    game_ui.set_map(maps.map[cgd.current_map].clone());
+    game_ui.set_map(cgd.maps.map[cgd.current_map].clone());
     game_ui.set_entities(result);
     uicomps.comps.insert(
         GAME_UI_NAME.to_string(),
@@ -432,7 +424,7 @@ fn update_map(
 
 fn intent_system(cgd: Res<CurrentGameData>, query: Query<(Entity, &Intent)>) {
     for (entity, intent) in query {
-        debug_once!("entity {} has intent {:?}", q.0, q.1);
+        debug_once!("entity {} has intent {:?}", entity, intent);
         if entity == cgd.player.unwrap() {
             // if maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
             //     todo!()

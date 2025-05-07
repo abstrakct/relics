@@ -12,7 +12,7 @@ pub use rect::*;
 pub use tile::*;
 pub use tile_definition::*;
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub struct Maps {
     pub map: Vec<Map>,
 }
