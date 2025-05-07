@@ -128,6 +128,18 @@ pub struct Attribute {
 #[require(Position, Render, Name, DetailedName, Stats, Attributes)]
 pub struct Player;
 
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct Sentient;
+
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct Corporeal;
+
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct Mental;
+
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct Spiritual;
+
 //----------------------//
 // Components with data //
 //----------------------//
@@ -183,7 +195,7 @@ pub struct Attributes {
 /// This component describes an entity's *intent* to perform some action.
 /// The entity may or may not be able to do it, or succeed if able.
 /// The intent system must find out those things, and produce appropriate events.
-#[derive(Component, Serialize, Deserialize)]
+#[derive(Component, Debug, Serialize, Deserialize)]
 pub enum Intent {
     MoveRelative { dx: i32, dy: i32 },
     MoveAbsolute { x: i32, y: i32 },
