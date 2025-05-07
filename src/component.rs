@@ -180,6 +180,15 @@ pub struct Attributes {
     pub int: Attribute,
 }
 
+/// This component describes an entity's *intent* to perform some action.
+/// The entity may or may not be able to do it, or succeed if able.
+/// The intent system must find out those things, and produce appropriate events.
+#[derive(Component, Serialize, Deserialize)]
+pub enum Intent {
+    MoveRelative { dx: i32, dy: i32 },
+    MoveAbsolute { x: i32, y: i32 },
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
