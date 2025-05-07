@@ -1,4 +1,4 @@
-use bevy_ecs::event::Event;
+use bevy_ecs::{entity::Entity, event::Event};
 
 // This file holds all events (except for GameEvent)
 
@@ -9,4 +9,10 @@ use bevy_ecs::event::Event;
 pub struct PlayerMoveEvent {
     pub x: i32,
     pub y: i32,
+}
+
+#[derive(Event, Debug, Clone, PartialEq, Eq)]
+pub enum IntentEvent {
+    MoveRelative { entity: Entity, dx: i32, dy: i32 },
+    MoveAbsolute { entity: Entity, x: i32, y: i32 },
 }

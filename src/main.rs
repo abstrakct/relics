@@ -137,9 +137,11 @@ fn main() {
         // Resources
         .init_resource::<UIConfig>()
         .init_resource::<UIComponents>()
+        .init_resource::<CurrentGameData>()
         .insert_resource(seed)
         // Events
         .add_event::<GameEvent>()
+        .add_event::<IntentEvent>()
         .add_event::<PlayerMoveEvent>()
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
@@ -177,10 +179,11 @@ fn log_positions(query: Query<(Entity, &Position)>) {
 
 fn game_event_handler(
     mut param_set: ParamSet<(EventReader<GameEvent>, EventWriter<GameEvent>)>,
-    mut player_move: EventWriter<PlayerMoveEvent>,
+    mut intent_queue: EventWriter<IntentEvent>,
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
     mut next_state: ResMut<NextState<GameState>>,
+    cgd: Res<CurrentGameData>,
 ) {
     let mut events_to_send = Vec::new();
     for event in param_set.p0().read() {
@@ -199,7 +202,11 @@ fn game_event_handler(
                 next_state.set(GameState::Menu);
             }
             GameEvent::PlayerMove { x, y } => {
-                player_move.write(PlayerMoveEvent { x: *x, y: *y });
+                intent_queue.write(IntentEvent::MoveRelative {
+                    entity: cgd.player.unwrap(),
+                    dx: *x,
+                    dy: *y,
+                });
             }
             _ => {}
         }
