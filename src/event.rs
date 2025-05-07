@@ -6,9 +6,9 @@ use bevy_ecs::{entity::Entity, event::Event};
 // TODO: should be entity move, not player move??
 
 #[derive(Event, Debug, Clone, PartialEq, Eq)]
-pub struct PlayerMoveEvent {
-    pub x: i32,
-    pub y: i32,
+pub struct PlayerMoveRelativeEvent {
+    pub dx: i32,
+    pub dy: i32,
 }
 
 #[derive(Event, Debug, Clone, PartialEq, Eq)]

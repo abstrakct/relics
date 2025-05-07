@@ -147,7 +147,7 @@ fn main() {
         // Events
         .add_event::<GameEvent>()
         .add_event::<IntentEvent>()
-        .add_event::<PlayerMoveEvent>()
+        .add_event::<PlayerMoveRelativeEvent>()
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
         .add_systems(Startup, enter_main_menu)
@@ -422,22 +422,34 @@ fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, quer
     );
 }
 
-fn intent_system(cgd: Res<CurrentGameData>, query: Query<(Entity, &Intent)>) {
+#[allow(clippy::collapsible_if, clippy::single_match)]
+fn intent_system(
+    cgd: Res<CurrentGameData>,
+    mut move_queue: EventWriter<PlayerMoveRelativeEvent>,
+    query: Query<(Entity, &Intent)>,
+) {
     for (entity, intent) in query {
         debug_once!("entity {} has intent {:?}", entity, intent);
-        if entity == cgd.player.unwrap() {
-            // if maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
-            //     todo!()
-            // }
+        match *intent {
+            Intent::MoveRelative { dx, dy } => {
+                if entity == cgd.player.unwrap() {
+                    if cgd.maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
+                        debug_once!("entity is player, sending PlayerMoveRelativeEvent");
+                        move_queue.write(PlayerMoveRelativeEvent { dx, dy });
+                    }
+                }
+            }
+            _ => {}
         }
     }
 }
 
-fn player_move_system(mut player_move: EventReader<PlayerMoveEvent>, mut query: Query<(&Player, &mut Position)>) {
+fn player_move_system(mut player_move: EventReader<PlayerMoveRelativeEvent>, mut query: Query<(&Player, &mut Position)>) {
     for pm in player_move.read() {
+        debug_once!("Got PlayerMoveRelativeEvent, moving player");
         if let Ok((_entity, mut pos)) = query.single_mut() {
-            pos.x += pm.x;
-            pos.y += pm.y;
+            pos.x += pm.dx;
+            pos.y += pm.dy;
         }
     }
 }
