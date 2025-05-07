@@ -153,6 +153,7 @@ fn main() {
         .add_systems(Startup, enter_main_menu)
         // Update schedule
         .add_systems(First, update_player_pos)
+        .add_systems(PreUpdate, cleanup_component_system::<Intent>.before(keyboard_input_system))
         .add_systems(PreUpdate, keyboard_input_system)
         // .add_systems(PreUpdate, log_positions)
         .add_systems(Update, ui_render_system)
