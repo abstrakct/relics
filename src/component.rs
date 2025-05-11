@@ -1,6 +1,12 @@
+// use bevy::log::debug;
 use bevy_ecs::prelude::*;
 use ratatui::style::Color;
 use serde::{Deserialize, Serialize};
+
+use crate::{
+    gamelogic::{RollResult, RollResultType, Rollable},
+    rng,
+};
 
 //----------------//
 // Helper structs //
@@ -118,6 +124,58 @@ pub struct Attribute {
     pub base: i32,
     pub modifiers: i32,
     pub bonus: i32,
+}
+
+impl Rollable for Attribute {
+    fn check(&self, roll: i32) -> RollResult {
+        let great_success = (self.base as f32 * 0.4).max(3.0) as i32;
+        let extreme_success = (self.base as f32 * 0.1).max(2.0) as i32;
+
+        let mut great_failure = ((100 - self.base) as f32 * 0.4).max(2.0) as i32;
+        let mut extreme_failure = ((100 - self.base) as f32 * 0.1).max(1.0) as i32;
+
+        if great_failure < 2 {
+            great_failure = 2;
+        }
+        if extreme_failure < 1 {
+            extreme_failure = 1;
+        }
+
+        println!("base is {}, roll is {}", self.base, roll);
+        println!("threshold for great success is {}", great_success);
+        println!("threshold for extreme success is {}", extreme_success);
+        println!("threshold for great failure is {}", 100 - great_failure);
+        println!("threshold for extreme failure is {}", 100 - extreme_failure);
+
+        if roll <= self.base {
+            if roll == 1 {
+                RollResult::Success(RollResultType::Critical)
+            } else if roll <= extreme_success {
+                RollResult::Success(RollResultType::Extreme)
+            } else if roll <= great_success {
+                RollResult::Success(RollResultType::Great)
+            } else {
+                RollResult::Success(RollResultType::Normal)
+            }
+        } else if roll > self.base {
+            if roll == 100 {
+                RollResult::Failure(RollResultType::Critical)
+            } else if (100 - roll) < extreme_failure {
+                RollResult::Failure(RollResultType::Extreme)
+            } else if (100 - roll) < great_failure {
+                RollResult::Failure(RollResultType::Great)
+            } else {
+                RollResult::Failure(RollResultType::Normal)
+            }
+        } else {
+            RollResult::Failure(RollResultType::Normal)
+        }
+    }
+
+    fn roll(&self) -> RollResult {
+        let roll = rng::roll_str("1d100");
+        self.check(roll)
+    }
 }
 
 //-------------------//
@@ -302,5 +360,18 @@ mod tests {
         pool.empty();
         pool.set_max();
         assert!(pool.is_full());
+    }
+
+    #[test]
+    fn attribute_roll_test() {
+        let a = Attribute {
+            base: 90,
+            modifiers: 0,
+            bonus: 0,
+        };
+
+        let result = a.check(89);
+        println!("result: {:?}", result);
+        assert_eq!(result, RollResult::Success(RollResultType::Normal));
     }
 }

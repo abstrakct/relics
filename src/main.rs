@@ -5,8 +5,9 @@ use bevy::log::*;
 use bevy::{app::ScheduleRunnerPlugin, prelude::*, state::app::StatesPlugin};
 use bevy_ratatui::{RatatuiPlugins, event::KeyEvent};
 use clap::Parser;
-use component::Position;
+// use component::Position;
 use serde::{Deserialize, Serialize};
+use std::process::exit;
 use std::{
     env,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -19,6 +20,7 @@ mod config;
 mod event;
 mod game;
 mod game_event;
+mod gamelogic;
 mod map;
 mod player;
 mod rng;
@@ -34,6 +36,7 @@ pub use config::*;
 use event::*;
 use game::CurrentGameData;
 pub use game_event::*;
+use gamelogic::Rollable;
 pub use player::*;
 pub use rng::*;
 use system::ui_render::ui_render_system;
@@ -123,6 +126,11 @@ fn main() {
     info!("Setting RNG seed to {}", seed.0);
     rng::reseed(seed.0);
 
+    if args.stats {
+        do_stats();
+        exit(0);
+    }
+
     ///// Build Bevy App and run
     let frame_time = Duration::from_secs_f32(1.0 / 60.0);
 
@@ -178,6 +186,20 @@ fn main() {
         .add_systems(OnEnter(GameState::InGame), show_game_ui)
         .add_systems(OnExit(GameState::InGame), hide_game_ui)
         .run();
+}
+
+fn do_stats() {
+    for i in 1..=100 {
+        println!("{i}");
+        let a = Attribute {
+            base: i,
+            ..Default::default()
+        };
+        let result = a.check(50);
+        println!("result: {:?}\n", result);
+        let result = a.roll();
+        println!("result: {:?}\n", result);
+    }
 }
 
 // fn log_positions(query: Query<(Entity, &Position)>) {
