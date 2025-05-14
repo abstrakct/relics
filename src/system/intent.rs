@@ -22,7 +22,7 @@ pub fn intent_system(
         match *intent {
             Intent::MoveRelative { dx, dy } => {
                 if entity == cgd.player.unwrap() {
-                    if cgd.maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
+                    if cgd.maps.map[cgd.player_pos.map].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
                         debug_once!("entity is player, sending PlayerMoveRelativeEvent");
                         move_queue.write(PlayerMoveRelativeEvent { dx, dy });
                         energy_queue.write(PlayerSpentEnergy(base_energy_cost));
