@@ -39,7 +39,7 @@ pub use game_event::*;
 use gamelogic::Rollable;
 pub use player::*;
 pub use rng::*;
-use system::ui_render::ui_render_system;
+use system::*;
 pub use ui::*;
 pub use ui_component::*;
 use worldgen::generate_world;
@@ -88,11 +88,11 @@ pub enum TurnState {
     NotPlayersTurn,
 }
 
-#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
-enum GameplaySet {
-    Player,
-    NonPlayer,
-}
+// #[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+// enum GameplaySet {
+//     Player,
+//     NonPlayer,
+// }
 
 fn main() {
     ////// Start logger
@@ -439,69 +439,6 @@ fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, quer
             visible: true,
         },
     );
-}
-
-#[allow(clippy::collapsible_if, clippy::single_match)]
-fn intent_system(
-    cgd: Res<CurrentGameData>,
-    mut move_queue: EventWriter<PlayerMoveRelativeEvent>,
-    mut energy_queue: EventWriter<PlayerSpentEnergy>,
-    query: Query<(Entity, &Intent)>,
-) {
-    for (entity, intent) in query {
-        let base_energy_cost = intent.energy_cost();
-        debug!(
-            "entity {} has intent {:?} - it has base cost of {} energy",
-            entity, intent, base_energy_cost
-        );
-
-        match *intent {
-            Intent::MoveRelative { dx, dy } => {
-                if entity == cgd.player.unwrap() {
-                    if cgd.maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
-                        debug_once!("entity is player, sending PlayerMoveRelativeEvent");
-                        move_queue.write(PlayerMoveRelativeEvent { dx, dy });
-                        energy_queue.write(PlayerSpentEnergy(base_energy_cost));
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-fn player_spent_energy_system(
-    mut energy_queue: EventReader<PlayerSpentEnergy>,
-    mut query: Query<&mut Energy>,
-    player_query: Query<(&Player, &Speed)>,
-) {
-    if let Ok((_, speed)) = player_query.single() {
-        for e in energy_queue.read() {
-            debug!("{:?}", e);
-            for mut comp in query.iter_mut() {
-                debug!("Found entity with Energy component: {:?}", comp);
-                comp.energy += (e.0 as f32 * speed.speed) as i32;
-                debug!("Energy component after increase: {:?}", comp);
-            }
-        }
-    }
-}
-
-fn player_move_system(mut player_move: EventReader<PlayerMoveRelativeEvent>, mut query: Query<(&Player, &mut Position)>) {
-    for pm in player_move.read() {
-        debug_once!("Got PlayerMoveRelativeEvent, moving player");
-        if let Ok((_entity, mut pos)) = query.single_mut() {
-            pos.x += pm.dx;
-            pos.y += pm.dy;
-        }
-    }
-}
-
-/// Update player position in CurrentGameData resource
-fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player, &Position)>) {
-    if let Ok((_player, pos)) = query.single() {
-        cgd.player_pos = *pos;
-    }
 }
 
 /// System which removes all components of type T from all entities that have them.
