@@ -27,16 +27,19 @@ pub fn player_move_system(
 
 pub fn player_spent_energy_system(
     mut energy_queue: EventReader<PlayerSpentEnergy>,
-    mut query: Query<&mut Energy>,
+    mut query: Query<(&mut Energy, &Position)>,
     player_query: Query<(&Player, &Speed)>,
+    cgd: Res<CurrentGameData>,
 ) {
     if let Ok((_, speed)) = player_query.single() {
         for e in energy_queue.read() {
             debug!("{:?}", e);
-            for mut comp in query.iter_mut() {
-                debug!("Found entity with Energy component: {:?}", comp);
-                comp.energy += (e.0 as f32 * speed.speed) as i32;
-                debug!("Energy component after increase: {:?}", comp);
+            for (mut energy, pos) in query.iter_mut() {
+                if pos.map == cgd.current_map {
+                    debug!("Found entity on current map with Energy component: {:?}", energy);
+                    energy.energy += (e.0 as f32 * speed.speed) as i32;
+                    debug!("Energy component after increase: {:?}", energy);
+                }
             }
         }
     }
