@@ -13,6 +13,7 @@ pub struct Camera {
     entities: Vec<(Position, Render)>,
 }
 
+#[allow(dead_code)]
 impl Camera {
     pub fn new(player_pos: Position, map: Map, entities: Vec<(Position, Render)>) -> Self {
         Self {
@@ -66,7 +67,7 @@ impl Default for RenderedTile {
     }
 }
 
-pub fn render_map(player_pos: &Position, map: Map, area: Rect, entities: Vec<(Position, Render)>) -> Grid<RenderedTile> {
+pub fn render_map(_player_pos: &Position, map: Map, _area: Rect, entities: Vec<(Position, Render)>) -> Grid<RenderedTile> {
     let mut rendered_map = Grid::init(map.height, map.width, RenderedTile::default());
 
     for ((y, x), tile) in map.tiles.indexed_iter() {
