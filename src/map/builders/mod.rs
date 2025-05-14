@@ -150,10 +150,10 @@ fn random_rooms_builder(builder: &mut BuilderChain) {
     }
 }
 
-pub fn random_builder(map_id: i32, map_name: &str, width: usize, height: usize) -> BuilderChain {
+pub fn random_builder(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
     let mut builder = BuilderChain::new(width, height);
 
-    builder.build_data.map.id = map_id as i32;
+    builder.build_data.map.id = map_id;
     builder.build_data.map.name = map_name.into();
 
     let map_type = rng::roll_str("1d2");
@@ -169,7 +169,7 @@ pub fn random_builder(map_id: i32, map_name: &str, width: usize, height: usize) 
     builder
 }
 
-pub fn generate_builder_chain(map_id: i32, map_name: &str, width: usize, height: usize) -> BuilderChain {
+pub fn generate_builder_chain(map_id: usize, map_name: &str, width: usize, height: usize) -> BuilderChain {
     info!("Building map {map_id}: {map_name} using random_builder");
     random_builder(map_id, map_name, width, height)
 }

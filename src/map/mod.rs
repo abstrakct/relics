@@ -25,7 +25,7 @@ impl Maps {
 
 #[derive(Default, Clone, Deserialize, Serialize)]
 pub struct Map {
-    pub id: i32,
+    pub id: usize,
     pub name: String,
     pub width: usize,
     pub height: usize,
@@ -37,7 +37,7 @@ pub struct Map {
 
 #[allow(dead_code)]
 impl Map {
-    pub fn new(id: i32, name: &str, width: usize, height: usize) -> Self {
+    pub fn new(id: usize, name: &str, width: usize, height: usize) -> Self {
         Self {
             id,
             name: name.into(),

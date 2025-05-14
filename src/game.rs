@@ -19,7 +19,7 @@ use crate::{component::Position, map::Maps};
 // TODO: this could potentially be stored as an Entity
 #[derive(Resource, Default)]
 pub struct CurrentGameData {
-    pub current_map: i32,
+    pub current_map: usize,
     pub player: Option<Entity>,
     pub player_pos: Position,
     pub maps: Maps,

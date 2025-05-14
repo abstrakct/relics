@@ -210,7 +210,7 @@ pub struct Spiritual;
 pub struct Position {
     pub x: i32,
     pub y: i32,
-    pub map: i32,
+    pub map: usize,
 }
 
 #[derive(Component, Clone, Copy, Default, Serialize, Deserialize)]

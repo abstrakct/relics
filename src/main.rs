@@ -425,7 +425,7 @@ fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, quer
             position.y,
             position.map
         );
-        if position.map == cgd.current_map as i32 {
+        if position.map == cgd.current_map {
             result.push((*position, *render));
         }
     }
