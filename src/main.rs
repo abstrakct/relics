@@ -155,6 +155,7 @@ fn main() {
         // Events
         .add_event::<GameEvent>()
         .add_event::<PlayerMoveRelativeEvent>()
+        .add_event::<PlayerSpentEnergy>()
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
         .add_systems(Startup, enter_main_menu)
