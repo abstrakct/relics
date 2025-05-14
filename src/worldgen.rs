@@ -1,6 +1,6 @@
 use crate::{
     CFG, GameEvent, GameState,
-    component::Position,
+    component::*,
     game::CurrentGameData,
     map::{Map, Maps, generate_builder_chain},
     player, utils,
@@ -33,6 +33,24 @@ fn generate_maps(first: usize, last: usize) -> (Maps, Position) {
     (maps, dungeon_entry)
 }
 
+fn temp_spawn_npc_entities(world: &mut World) {
+    for i in 1..=5 {
+        let mut entity = world.spawn_empty();
+        entity.insert((Sentient, Corporeal, Mental));
+        entity.insert(Name::new(format!("npc{}", i)));
+        entity.insert(Energy { energy: 0 });
+        entity.insert(Position { x: 10, y: i, map: 1 });
+        entity.insert(Render {
+            glyph: '@',
+            fg: ratatui::style::Color::Red,
+            bg: ratatui::style::Color::Black,
+            order: 1,
+            always: true,
+        });
+        entity.insert(MovementType::Random);
+    }
+}
+
 pub fn generate_world(world: &mut World) {
     info!("Starting world generation");
 
@@ -63,6 +81,8 @@ pub fn generate_world(world: &mut World) {
 
     info!("Inserting resources");
     world.insert_resource(gamedata);
+
+    temp_spawn_npc_entities(world);
 
     // Change game state
     let mut game_state = world.resource_mut::<NextState<GameState>>();
