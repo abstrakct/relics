@@ -1,5 +1,5 @@
 use crate::{
-    CurrentGameData,
+    CurrentGameData, TurnState,
     component::{Energy, Player, Position, Speed},
     event::{PlayerMoveRelativeEvent, PlayerSpentEnergy},
 };
@@ -15,6 +15,7 @@ pub fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player
 pub fn player_move_system(
     mut player_move: EventReader<PlayerMoveRelativeEvent>,
     mut query: Query<(&Player, &mut Position)>,
+    mut next_state: ResMut<NextState<TurnState>>,
 ) {
     for pm in player_move.read() {
         debug_once!("Got PlayerMoveRelativeEvent, moving player");
@@ -22,6 +23,7 @@ pub fn player_move_system(
             pos.x += pm.dx;
             pos.y += pm.dy;
         }
+        next_state.set(TurnState::NotPlayersTurn);
     }
 }
 
