@@ -176,6 +176,7 @@ fn main() {
         // .add_systems(PreUpdate, log_positions)
         .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
+        // Player's Turn
         .add_systems(
             Update,
             intent_system
@@ -192,6 +193,10 @@ fn main() {
         //         .run_if(in_state(TurnState::PlayersTurn))
         //         .in_set(GameplaySet::NonPlayer),
         // )
+        //
+        // Not Player's Turn
+        // .add_systems(OnEnter(TurnState::NotPlayersTurn), )
+        // Other stuff
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         .add_systems(Update, log_transitions::<TurnState>)
