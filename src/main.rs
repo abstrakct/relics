@@ -184,16 +184,14 @@ fn main() {
         )
         .add_systems(
             Update,
-            (player_move_system, player_spent_energy_system)
-                .run_if(in_state(TurnState::PlayersTurn))
-                .in_set(GameplaySet::Player),
+            (player_move_system, player_spent_energy_system, update_player_pos).run_if(in_state(TurnState::PlayersTurn)),
         )
-        .add_systems(
-            Update,
-            (update_player_pos)
-                .run_if(in_state(TurnState::PlayersTurn))
-                .in_set(GameplaySet::NonPlayer),
-        )
+        // .add_systems(
+        //     Update,
+        //     (update_player_pos)
+        //         .run_if(in_state(TurnState::PlayersTurn))
+        //         .in_set(GameplaySet::NonPlayer),
+        // )
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
         .add_systems(Update, log_transitions::<TurnState>)
