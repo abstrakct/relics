@@ -6,8 +6,8 @@ use crate::{
 use bevy::prelude::*;
 
 /// Update player position in CurrentGameData resource
-pub fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<(&Player, &Position)>) {
-    if let Ok((_player, pos)) = query.single() {
+pub fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<&Position, With<Player>>) {
+    if let Ok(pos) = query.single() {
         cgd.player_pos = *pos;
     }
 }
