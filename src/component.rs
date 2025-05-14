@@ -282,6 +282,12 @@ pub struct Energy {
     pub energy: i32,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub enum MovementType {
+    Static,
+    Random,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
