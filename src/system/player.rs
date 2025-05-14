@@ -14,12 +14,12 @@ pub fn update_player_pos(mut cgd: ResMut<CurrentGameData>, query: Query<&Positio
 
 pub fn player_move_system(
     mut player_move: EventReader<PlayerMoveRelativeEvent>,
-    mut query: Query<(&Player, &mut Position)>,
+    mut query: Query<&mut Position, With<Player>>,
     mut next_state: ResMut<NextState<TurnState>>,
 ) {
     for pm in player_move.read() {
         debug_once!("Got PlayerMoveRelativeEvent, moving player");
-        if let Ok((_entity, mut pos)) = query.single_mut() {
+        if let Ok(mut pos) = query.single_mut() {
             pos.x += pm.dx;
             pos.y += pm.dy;
         }
@@ -30,10 +30,10 @@ pub fn player_move_system(
 pub fn player_spent_energy_system(
     mut energy_queue: EventReader<PlayerSpentEnergy>,
     mut query: Query<(&mut Energy, &Position)>,
-    player_query: Query<(&Player, &Speed)>,
+    player_query: Query<&Speed, With<Player>>,
     cgd: Res<CurrentGameData>,
 ) {
-    if let Ok((_, speed)) = player_query.single() {
+    if let Ok(speed) = player_query.single() {
         for e in energy_queue.read() {
             debug!("{:?}", e);
             for (mut energy, pos) in query.iter_mut() {
