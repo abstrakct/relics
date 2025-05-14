@@ -263,6 +263,15 @@ pub enum Intent {
     MoveAbsolute { x: i32, y: i32 },
 }
 
+impl Intent {
+    pub fn energy_cost(&self) -> i32 {
+        match *self {
+            Self::MoveAbsolute { .. } => 200,
+            Self::MoveRelative { .. } => 100,
+        }
+    }
+}
+
 #[derive(Component, Debug, Serialize, Deserialize)]
 pub struct Speed {
     pub speed: f32,

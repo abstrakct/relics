@@ -181,10 +181,10 @@ fn main() {
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
         .add_systems(OnExit(MenuState::MainMenu), hide_main_menu)
-        .add_systems(OnEnter(GameState::WorldGen), generate_world)
-        .add_systems(OnEnter(GameState::NewGame), setup_new_game)
         .add_systems(OnEnter(GameState::InGame), show_game_ui)
         .add_systems(OnExit(GameState::InGame), hide_game_ui)
+        .add_systems(OnEnter(GameState::WorldGen), generate_world)
+        .add_systems(OnEnter(GameState::NewGame), setup_new_game)
         .run();
 }
 
@@ -430,13 +430,24 @@ fn intent_system(
     query: Query<(Entity, &Intent)>,
 ) {
     for (entity, intent) in query {
-        debug_once!("entity {} has intent {:?}", entity, intent);
+        let base_energy_cost = intent.energy_cost();
+        debug!(
+            "entity {} has intent {:?} - it has base cost of {} energy",
+            entity, intent, base_energy_cost
+        );
+
         match *intent {
             Intent::MoveRelative { dx, dy } => {
                 if entity == cgd.player.unwrap() {
                     if cgd.maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
                         debug_once!("entity is player, sending PlayerMoveRelativeEvent");
                         move_queue.write(PlayerMoveRelativeEvent { dx, dy });
+                        // TODO:
+                        // calculate energy usage based on speed
+                        // distribute energy points to relevant entities
+                        // maybe through a separate event queue?
+                        // like player-spent-energy(base amount), which in turn can calculate full amount
+                        // based on speed and distribute it
                     }
                 }
             }
