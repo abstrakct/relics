@@ -171,9 +171,15 @@ fn main() {
         )
         .add_systems(
             Update,
-            (player_move_system)
+            (player_move_system, player_spent_energy_system)
                 .run_if(in_state(GameState::InGame))
                 .in_set(GameplaySet::Player),
+        )
+        .add_systems(
+            Update,
+            (update_player_pos)
+                .run_if(in_state(GameState::InGame))
+                .in_set(GameplaySet::NonPlayer),
         )
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
@@ -227,7 +233,7 @@ fn game_event_handler(
 ) {
     let mut events_to_send = Vec::new();
     for event in param_set.p0().read() {
-        info!("Received: {:?}", event);
+        debug!("Received GameEvent: {:?}", event);
         match event {
             GameEvent::Quit => {
                 app_exit.write_default();
@@ -427,6 +433,7 @@ fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, quer
 fn intent_system(
     cgd: Res<CurrentGameData>,
     mut move_queue: EventWriter<PlayerMoveRelativeEvent>,
+    mut energy_queue: EventWriter<PlayerSpentEnergy>,
     query: Query<(Entity, &Intent)>,
 ) {
     for (entity, intent) in query {
@@ -442,16 +449,28 @@ fn intent_system(
                     if cgd.maps.map[cgd.player_pos.map as usize].is_walkable(cgd.player_pos.x + dx, cgd.player_pos.y + dy) {
                         debug_once!("entity is player, sending PlayerMoveRelativeEvent");
                         move_queue.write(PlayerMoveRelativeEvent { dx, dy });
-                        // TODO:
-                        // calculate energy usage based on speed
-                        // distribute energy points to relevant entities
-                        // maybe through a separate event queue?
-                        // like player-spent-energy(base amount), which in turn can calculate full amount
-                        // based on speed and distribute it
+                        energy_queue.write(PlayerSpentEnergy(base_energy_cost));
                     }
                 }
             }
             _ => {}
+        }
+    }
+}
+
+fn player_spent_energy_system(
+    mut energy_queue: EventReader<PlayerSpentEnergy>,
+    mut query: Query<&mut Energy>,
+    player_query: Query<(&Player, &Speed)>,
+) {
+    if let Ok((_, speed)) = player_query.single() {
+        for e in energy_queue.read() {
+            debug!("{:?}", e);
+            for mut comp in query.iter_mut() {
+                debug!("Found entity with Energy component: {:?}", comp);
+                comp.energy += (e.0 as f32 * speed.speed) as i32;
+                debug!("Energy component after increase: {:?}", comp);
+            }
         }
     }
 }
