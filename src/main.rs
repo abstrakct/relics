@@ -353,7 +353,7 @@ fn setup_new_game(
 ) {
     // Update GameUi with current map
     let mut game_ui = ui::components::GameUi::new();
-    game_ui.set_map(cgd.maps.map[cgd.current_map].clone());
+    game_ui.set_map(cgd.maps.map[cgd.current_map as usize].clone());
     uicomps.comps.insert(
         GAME_UI_NAME.to_string(),
         UIComponentData {
@@ -430,7 +430,7 @@ fn update_map(cgd: Res<CurrentGameData>, mut uicomps: ResMut<UIComponents>, quer
 
     // Update Game UI
     let mut game_ui = ui::components::GameUi::new();
-    game_ui.set_map(cgd.maps.map[cgd.current_map].clone());
+    game_ui.set_map(cgd.maps.map[cgd.current_map as usize].clone());
     game_ui.set_entities(result);
     uicomps.comps.insert(
         GAME_UI_NAME.to_string(),

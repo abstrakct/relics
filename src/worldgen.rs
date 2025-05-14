@@ -8,7 +8,7 @@ use crate::{
 use bevy::log::*;
 use bevy::prelude::*;
 
-fn generate_maps(first: usize, last: usize) -> (Maps, Position) {
+fn generate_maps(first: i32, last: i32) -> (Maps, Position) {
     let mut maps = Maps::new();
     let mut dungeon_entry = Position::default();
 
@@ -55,8 +55,8 @@ pub fn generate_world(world: &mut World) {
     info!("Starting world generation");
 
     let cfg = CFG.lock().unwrap();
-    let first_map: usize = 1;
-    let last_map: usize = cfg.config.world.max_levels as usize;
+    let first_map: i32 = 1;
+    let last_map: i32 = cfg.config.world.max_levels;
     std::mem::drop(cfg);
 
     info!("Deleting any existing maps");
