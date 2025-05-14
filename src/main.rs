@@ -79,6 +79,15 @@ pub enum MenuState {
     SomeOtherMenu,
 }
 
+#[derive(SubStates, Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[source(GameState = GameState::InGame)]
+// #[states(scoped_entities)]
+pub enum TurnState {
+    #[default]
+    PlayersTurn,
+    NotPlayersTurn,
+}
+
 #[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
 enum GameplaySet {
     Player,
@@ -147,6 +156,7 @@ fn main() {
         // States
         .init_state::<GameState>()
         .add_sub_state::<MenuState>()
+        .add_sub_state::<TurnState>()
         // Resources
         .init_resource::<UIConfig>()
         .init_resource::<UIComponents>()
@@ -168,22 +178,25 @@ fn main() {
         .add_systems(Update, game_event_handler)
         .add_systems(
             Update,
-            intent_system.run_if(in_state(GameState::InGame)).after(game_event_handler),
+            intent_system
+                .run_if(in_state(TurnState::PlayersTurn))
+                .after(game_event_handler),
         )
         .add_systems(
             Update,
             (player_move_system, player_spent_energy_system)
-                .run_if(in_state(GameState::InGame))
+                .run_if(in_state(TurnState::PlayersTurn))
                 .in_set(GameplaySet::Player),
         )
         .add_systems(
             Update,
             (update_player_pos)
-                .run_if(in_state(GameState::InGame))
+                .run_if(in_state(TurnState::PlayersTurn))
                 .in_set(GameplaySet::NonPlayer),
         )
         .add_systems(Update, log_transitions::<GameState>)
         .add_systems(Update, log_transitions::<MenuState>)
+        .add_systems(Update, log_transitions::<TurnState>)
         .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame))) // TODO: only run on some Map Update event?
         // State transition schedules
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
