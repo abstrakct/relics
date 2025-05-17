@@ -272,6 +272,14 @@ impl Intent {
     }
 }
 
+/// This component means an entity *will* perform an action.
+/// It has already been determined that the entity is able to.
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub enum PerformAction {
+    MoveAbsolute { x: i32, y: i32 },
+    MoveRelative { dx: i32, dy: i32 },
+}
+
 #[derive(Component, Debug, Serialize, Deserialize)]
 pub struct Speed {
     pub speed: f32,
