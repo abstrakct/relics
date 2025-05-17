@@ -169,39 +169,75 @@ fn main() {
         // Startup schedule
         .add_systems(PreStartup, setup_ui_components)
         .add_systems(Startup, enter_main_menu)
+        // State transition logging
+        .add_systems(
+            First,
+            (
+                log_transitions::<GameState>,
+                log_transitions::<MenuState>,
+                log_transitions::<TurnState>,
+            ),
+        )
         // Update schedule
         .add_systems(First, update_player_pos)
-        .add_systems(PreUpdate, cleanup_component_system::<Intent>.before(keyboard_input_system))
-        .add_systems(PreUpdate, keyboard_input_system)
+        .add_systems(
+            First,
+            (
+                cleanup_component_system::<Intent>.before(produce_intents_system),
+                cleanup_component_system::<PerformAction>,
+                cleanup_component_system::<SpendEnergy>,
+            ),
+        )
+        // .add_systems(PreUpdate, cleanup_component_system::<Intent>.before(keyboard_input_system))
+        .add_systems(
+            Update,
+            keyboard_input_system, /*.run_if(in_state(TurnState::PlayersTurn).or(in_state(GameState::Menu)))*/
+        )
         // .add_systems(PreUpdate, log_positions)
         .add_systems(Update, ui_render_system)
         .add_systems(Update, game_event_handler)
+        .add_systems(Update, player_game_event_handler.run_if(in_state(TurnState::PlayersTurn)))
+        //
         // Player's Turn
+        //
+        // .add_systems(
+        //     OnEnter(TurnState::PlayersTurn),
+        //     (cleanup_component_system::<Intent>, cleanup_component_system::<PerformAction>),
+        // )
         .add_systems(
             Update,
-            intent_system
-                .run_if(in_state(TurnState::PlayersTurn))
-                .after(game_event_handler),
+            process_intents_system
+                .run_if(in_state(GameState::InGame))
+                .after(player_game_event_handler),
         )
         .add_systems(
             Update,
             (player_move_system, player_spent_energy_system, update_player_pos).run_if(in_state(TurnState::PlayersTurn)),
         )
-        // .add_systems(
-        //     Update,
-        //     (update_player_pos)
-        //         .run_if(in_state(TurnState::PlayersTurn))
-        //         .in_set(GameplaySet::NonPlayer),
-        // )
         //
         // Not Player's Turn
-        // .add_systems(OnEnter(TurnState::NotPlayersTurn), )
+        //
+        .add_systems(
+            OnEnter(TurnState::NotPlayersTurn),
+            (
+                // cleanup_component_system::<Intent>.before(produce_intents_system),
+                produce_intents_system,
+                // cleanup_component_system::<PerformAction>,
+                // cleanup_component_system::<SpendEnergy>,
+            ),
+        )
+        .add_systems(
+            PostUpdate,
+            (process_intents_system, movement_action_system, spend_energy_system)
+                .run_if(in_state(TurnState::NotPlayersTurn)),
+        )
+        //
         // Other stuff
-        .add_systems(Update, log_transitions::<GameState>)
-        .add_systems(Update, log_transitions::<MenuState>)
-        .add_systems(Update, log_transitions::<TurnState>)
+        //
         .add_systems(PostUpdate, update_map.run_if(in_state(GameState::InGame))) // TODO: only run on some Map Update event?
+        //
         // State transition schedules
+        //
         .add_systems(OnEnter(MenuState::MainMenu), show_main_menu)
         .add_systems(OnExit(MenuState::MainMenu), hide_main_menu)
         .add_systems(OnEnter(GameState::InGame), show_game_ui)
@@ -245,8 +281,8 @@ fn game_event_handler(
     mut app_exit: EventWriter<AppExit>,
     mut ui_components: ResMut<UIComponents>,
     mut next_state: ResMut<NextState<GameState>>,
-    mut commands: Commands,
-    cgd: Res<CurrentGameData>,
+    // mut commands: Commands,
+    // cgd: Res<CurrentGameData>,
 ) {
     let mut events_to_send = Vec::new();
     for event in param_set.p0().read() {
@@ -264,12 +300,6 @@ fn game_event_handler(
             GameEvent::ShowMainMenu => {
                 next_state.set(GameState::Menu);
             }
-            GameEvent::PlayerMoveRelative { dx, dy } => {
-                // intent_queue.write(IntentEvent::PlayerMoveRelative { dx: *x, dy: *y });
-                commands
-                    .entity(cgd.player.unwrap())
-                    .insert(Intent::MoveRelative { dx: *dx, dy: *dy });
-            }
             _ => {}
         }
 
@@ -284,6 +314,26 @@ fn game_event_handler(
 
     for event in events_to_send {
         param_set.p1().write(event);
+    }
+}
+
+fn player_game_event_handler(
+    mut event_queue: EventReader<GameEvent>,
+    // mut app_exit: EventWriter<AppExit>,
+    mut commands: Commands,
+    cgd: Res<CurrentGameData>,
+) {
+    for event in event_queue.read() {
+        debug!("Received GameEvent: {:?}", event);
+        #[allow(clippy::single_match)]
+        match event {
+            GameEvent::PlayerMoveRelative { dx, dy } => {
+                commands
+                    .entity(cgd.player.unwrap())
+                    .insert(Intent::MoveRelative { dx: *dx, dy: *dy });
+            }
+            _ => {}
+        }
     }
 }
 

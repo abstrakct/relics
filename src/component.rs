@@ -186,6 +186,11 @@ impl Rollable for Attribute {
 #[require(Position, Render, Name, DetailedName, Stats, Attributes)]
 pub struct Player;
 
+/// Indicates that an entity is an enemy of the player.
+/// Might get replaced later by factions or some other more generic system.
+#[derive(Component, Default, Serialize, Deserialize, Debug)]
+pub struct Enemy;
+
 /// Indicates that an entity is a sentient being.
 #[derive(Component, Default, Serialize, Deserialize, Debug)]
 pub struct Sentient;
@@ -259,6 +264,7 @@ pub struct Attributes {
 /// The intent system must find out those things, and produce appropriate events.
 #[derive(Component, Debug, Serialize, Deserialize)]
 pub enum Intent {
+    Nothing,
     MoveRelative { dx: i32, dy: i32 },
     MoveAbsolute { x: i32, y: i32 },
 }
@@ -266,6 +272,7 @@ pub enum Intent {
 impl Intent {
     pub fn energy_cost(&self) -> i32 {
         match *self {
+            Self::Nothing => 100,
             Self::MoveAbsolute { .. } => 200,
             Self::MoveRelative { .. } => 100,
         }
@@ -279,6 +286,9 @@ pub enum PerformAction {
     MoveAbsolute { x: i32, y: i32 },
     MoveRelative { dx: i32, dy: i32 },
 }
+
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub struct SpendEnergy(pub i32);
 
 #[derive(Component, Debug, Serialize, Deserialize)]
 pub struct Speed {

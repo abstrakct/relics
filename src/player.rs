@@ -10,6 +10,7 @@ pub struct PlayerBundle {
     attributes: Attributes,
     position: Position, // Add more components here as needed
     speed: Speed,
+    energy: Energy,
     // markers
     sentient: Sentient,
     corporeal: Corporeal,
@@ -84,8 +85,9 @@ impl PlayerBundle {
                 },
             },
             position: pos,
-            speed: Speed { speed: 1.0 },
+            speed: Speed { speed: 2.0 },
             // Markers
+            energy: Energy { energy: 0 }, // this one just exists to simply intent system
             sentient: Sentient,
             corporeal: Corporeal,
             mental: Mental,

@@ -36,10 +36,15 @@ fn generate_maps(first: usize, last: usize) -> (Maps, Position) {
 fn temp_spawn_npc_entities(world: &mut World) {
     for i in 1..=5 {
         let mut entity = world.spawn_empty();
-        entity.insert((Sentient, Corporeal, Mental));
+        entity.insert((Sentient, Corporeal, Mental, Enemy));
         entity.insert(Name::new(format!("npc{}", i)));
         entity.insert(Energy { energy: 0 });
-        entity.insert(Position { x: 10, y: i, map: 1 });
+        entity.insert(Speed { speed: 1.0 });
+        entity.insert(Position {
+            x: 10,
+            y: 10 + i,
+            map: 1,
+        });
         entity.insert(Render {
             glyph: '@',
             fg: ratatui::style::Color::Red,

@@ -28,15 +28,15 @@ pub fn player_move_system(
 }
 
 pub fn player_spent_energy_system(
-    mut energy_queue: EventReader<PlayerSpentEnergy>,
-    mut query: Query<(&mut Energy, &Position)>,
-    player_query: Query<&Speed, With<Player>>,
     cgd: Res<CurrentGameData>,
+    mut energy_queue: EventReader<PlayerSpentEnergy>,
+    mut energy_query: Query<(&mut Energy, &Position)>,
+    player_query: Query<&Speed, With<Player>>,
 ) {
     if let Ok(speed) = player_query.single() {
         for e in energy_queue.read() {
             debug!("{:?}", e);
-            for (mut energy, pos) in query.iter_mut() {
+            for (mut energy, pos) in energy_query.iter_mut() {
                 if pos.map == cgd.current_map {
                     debug!("Found entity on current map with Energy component: {:?}", energy);
                     energy.energy += (e.0 as f32 * speed.speed) as i32;
